@@ -1,0 +1,90 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+  resources:
+    - "assets/**"
+
+execute:
+  freeze: auto
+
+website:
+  title: "A. Jordan Nafa"
+  image: "assets/media/icon.svg"
+  favicon: "assets/media/icon.svg"
+  description: A. Jordan Nafa's Personal Website and Bayesian Statistics Blog
+  site-url: https://www.ajordannafa.com/
+  site-path: /
+
+  # Navigation Bar Settings
+  navbar:
+    logo: assets/media/icon.svg
+    logo-href: index.qmd
+    search: true
+    left:
+      - href: "about/index.qmd"
+        text: About
+      - href: "blog/index.qmd"
+        text: Blog
+      - href: "assets/media/Nafa, A. Jordan_Resume_December-2022.pdf"
+        text: Resume/CV
+      - href: "consulting/index.qmd"
+        text: Consulting
+      - href: "projects/index.qmd"
+        text: Projects
+    right:
+      - icon: github
+        href: https://github.com/ajnafa
+      - icon: twitter
+        href: https://twitter.com/adamjnafa
+      - icon: linkedin
+        href: https://www.linkedin.com/in/a-jordan-nafa/
+      - icon: envelope
+        href: mailto:adamjnafa@gmail.com
+
+  # Website Footer Information, adapted from https://github.com/andrewheiss/ath-quarto/blob/main/_quarto.yml
+  page-footer:
+    left: |
+      <span class="faux-block">{{< fa brands creative-commons >}} {{< var years >}} A. Jordan Nafa</span>
+      <span class="faux-block">All content licensed under<br>[{{< fa brands creative-commons >}} {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-sa >}} Creative Commons CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)</span>      
+    center: |
+      <span class="faux-block">{{< fa brands orcid >}} <strong>ORCID</strong> [{{< var orcid >}}](https://orcid.org/{{< var orcid >}})</span>
+      <span class="faux-block">{{< fa envelope >}} <strong>[Contact](mailto:adamjnafa@gmail.com)</strong></span>
+    right: |
+      <span class="faux-block">Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)</span>
+      <span class="faux-block">[View the source at {{< fa brands github >}} GitHub]({{< var github-url >}})</span>
+    border: "#a6a6a6"
+    background: "#1a1a1a"
+    foreground: "#ffffff"
+
+  # Social Media Information
+  open-graph:
+    locale: en_US
+    image: "assets/media/twitter-card-large-bw.png"
+
+  twitter-card: 
+    image: "assets/media/twitter-card-large-bw.png"
+    card-style: summary_large_image
+    creator: "@adamjnafa"
+    site: "@adamjnafa"
+
+  # Google Analytics
+  google-analytics: "G-9M71770F2F"
+
+# HTML formatting settings
+format:
+  html:
+    theme: "assets/css/lux-modified.scss"
+    css: "assets/css/styles.css"
+    toc: false
+    highlight-style: monokai
+    self-contained: true
+    citations-hover: true
+    code-link: true
+    code-block-bg: "#272822"
+    code-fold: show
+    include-in-header: "assets/js/math-colors.js"
+
+# Bibliography settings
+bibliography: "assets/bib/references.bib"
+csl: "assets/bib/apsa.csl"

@@ -1,0 +1,105 @@
+---
+title: "A. Jordan Nafa"
+image: ../assets/media/avatar.jpg
+linkstyle: normal
+about:
+  template: jolla
+  image-width: 18em
+  image-shape: round
+  links:
+    - icon: twitter
+      href: https://twitter.com/adamjnafa
+      text: twitter
+    - icon: mastodon
+      href: https://bayes.club/@ajordannafa
+      text: Mastodon
+    - icon: github
+      href: https://github.com/ajnafa
+      text: Github
+    - icon: linkedin
+      href: https://www.linkedin.com/in/a-jordan-nafa/
+      text: LinkedIn
+    - icon: envelope
+      href: mailto:adamjnafa@gmail.com
+      text: Email
+---
+ 
+
+I am a Quantitative Social Scientist and Teaching Fellow in the Department of Political 
+Science at the University of North Texas where I apply Bayesian inference and computational 
+statistics to examine how contextual factors shape individuals' attitudes, decisions, and 
+behavior. I have five years' experience working both independently and in collaboration 
+with colleagues to model data and provide insights necessary to answer research questions. 
+My core skills include research design, causal inference, quasi-experimental methods, 
+advanced data analytics in R, Stan, and Python, survey research, and an expertise in 
+applied Bayesian statistics. I also currently teach undergraduate courses in [applied 
+causal inference for quantitative political research](https://github.com/ajnafa/psci-3300-political-science-research) 
+and have previously taught courses in American political institutions and behavior.
+
+::: a
+My general career interests center around the development and application of Bayesian 
+inference and predictive analytics to answer questions about complex social phenomena 
+and solve business problems. As I approach the end of my PhD, I am in the process of 
+transitioning from academic social science to industry data science and applied analytics 
+and am actively seeking out data scientist, data analyst, and applied statistician roles, 
+particularly those oriented towards consulting.
+::: 
+
+## Experience
+
+::: {.d-flex .justify-content-between}
+::: {}
+**Quantitative Social Scientist**  
+**University of North Texas** 
+:::
+::: {.text-end}
+Aug 2018 - Present  
+Denton, TX  
+:::
+:::
+
+::: {.d-flex .justify-content-between}
+::: {}
+**Teaching Fellow**  
+**University of North Texas** 
+:::
+::: {.text-end} 
+Oct 2021 - Present  
+Denton, TX 
+:::
+:::
+
+::: {.d-flex .justify-content-between}
+::: {}
+**Research Assistant**  
+**Texas Woman's University** 
+:::
+::: {.text-end} 
+Feb 2018 - Aug 2018  
+Denton, TX 
+:::
+:::
+
+## Education
+
+::: {.d-flex .justify-content-between}
+::: {}
+**University of North Texas**  
+PhD in Political Science
+:::
+::: {.text-end}
+Aug 2018 - Present  
+Denton, TX  
+:::
+:::
+
+::: {.d-flex .justify-content-between}
+::: {}
+**Texas Woman's University**  
+Bachelor of Science in Political Science
+:::
+::: {.text-end}
+Aug 2014 - Aug 2018  
+Denton, TX  
+:::
+:::

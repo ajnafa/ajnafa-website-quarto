@@ -1,0 +1,863 @@
+---
+title: "These Aren't the Effects You're Looking For"
+date: 2022-12-13
+description: "This blog post provides an overview of the logic of statistical control, the fallacy of mutual adjustment, and a simulation-based illustration of correct and incorrect approaches to the interpretation of multivariable regression models in the social sciences."
+toc: true
+toc-location: body
+toc-depth: 3
+citation: true
+code-tools: true
+---
+
+<style>
+.column { padding-right: 1ex }
+.column + .column { padding-left: 1ex }
+</style>
+
+$$
+\newcommand{\indep}{\perp \!\!\! \perp}
+$$
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE,
+  warning = FALSE,
+  comment = ' ',
+  fig.path = 'figs/',
+  fig.align = "center",
+  fig.process = function(x) {
+    x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+    if (file.rename(x, x2))
+      x2
+    else
+      x
+  }
+)
+
+## Load the necessary libraries
+pacman::p_load(
+  "tidyverse",
+  "arrow",
+  "data.table",
+  "ggdag",
+  "dagitty",
+  "patchwork",
+  install = FALSE
+)
+
+# Function for adjusting the length of DAG edges
+shorten_dag_arrows <- function(tidy_dag, proportion){
+  # Update underlying ggdag object
+  tidy_dag$data <- dplyr::mutate(tidy_dag$data, 
+                                 xend = (1-proportion/2)*(xend - x) + x, 
+                                 yend = (1-proportion/2)*(yend - y) + y,
+                                 xstart = (1-proportion/2)*(x - xend) + xend,
+                                 ystart = (1-proportion/2)*(y-yend) + yend)
+  return(tidy_dag)
+}
+
+## Base theme for the DAGs
+dag_theme <- function(.base_size, ...) {
+  # Apply theme settings
+  theme_dag(
+    base_size = .base_size,
+    base_family = "serif",
+    strip.background = element_blank(),
+    plot.title = element_text(color = "black", vjust = 1),
+    plot.subtitle = element_text(color = "black"),
+    plot.caption = element_text(color = "black", face = "italic"),
+    legend.title = element_text(color = "black", face = "bold"),
+    legend.text = element_text(color = "black", face = "bold"),
+    plot.caption.position = "plot",
+    legend.position = "top",
+    ...
+  )
+}
+```
+
+::: {.callout-caution}
+## Notes About Assumptions
+
+This post assumes a basic familiarity with Rubin's [-@Rubin1974; -@Rubin1976; -@Rubin2005] 
+potential outcomes framework and the general logic of directed acyclic graphs. For an 
+introductory overview of the logic of causal inference in observational settings that 
+may provide helpful background, I direct readers to @Rohrer2018 and @Cinelli2022.
+::: 
+
+## Introduction
+
+@Westreich2013 originally coined the term Table 2 fallacy to describe the common 
+practice of presenting confounders included in a regression model alongside the 
+treatment or exposure of interest in Table 2 of an article and tendency of 
+researchers to interpret the coefficients for said confounders as total 
+effect estimates. Subsequent work has further highlighted the problem in political 
+science [@Keele2019], economics [@Huenermund2020], and sociology [@Lundberg2021]. 
+The consequences of this practice are often pernicious, with subsequent studies 
+treating inappropriately reported estimates as theoretically informative quantities 
+despite having no valid interpretation in their original context and readers 
+drawing incorrect conclusions with no empirical basis. Despite efforts to discourage 
+the practice and some steps in the right direction, the Table 2 fallacy remains an 
+often committed mistake by researchers across a diverse range of fields.
+
+::: a
+This blog post provides an overview of the logic of statistical control, the 
+fallacy of mutual adjustment, and a simulation-based illustration of correct
+and incorrect approaches to the interpretation of multivariable regression
+models in the social sciences. In this post I take as my starting point two 
+primary assumptions about research in the quantitative social sciences. 
+First, I assume the goal of any scientific study that does not explicitly 
+state otherwise is to evaluate some proposed theoretical explanation for an 
+assumed causal relationship. Research in the contemporary social sciences
+is primarily interested in evaluating theoretical claims about causal 
+processes and the practice of relying on euphamisms and weasel words
+to avoid saying *cause* and *effect* while still heavily implying the 
+existance of a causal relationship does not change this reality 
+[@Samii2016; @Hernan2018].
+
+Second, I assume that any theoretical process from which testable
+implications can be derived may be represented in the form of a directed 
+acyclic graph (DAG). While DAGs may be more common in some fields than
+others, the ability to express an assumed theoretical process in the form
+of a non-parameteric causal graph is a necessary condition for specifying
+a model of the process and estimating a causal relationship. If this is
+not possible, it generally implies the researcher is confused about
+what exactly they are trying to accomplish and does not have a properly 
+defined research question [@Lundberg2021].
+
+Neither of these assumptions should be taken to imply all research
+in the social sciences must be concerned with evaluating causal claims. 
+Indeed, there is value in *mere description* and exploratory research that 
+highlights interesting questions and provides useful context for causal
+analyses or theory building [@Gerring2004; @Gerring2012]. It is, however,
+necessary to be explicit about our inferential goals and the question we
+are attempting to answer in a given study. After all, the foundation of
+social scientific inquiry and quantitative research more broadly lies in 
+the art of providing vague answers to precise questions.
+::: 
+
+## The Logic of Regression Adjustment
+
+Following Rubin [-@Rubin1974; @Rubin1976; @Rubin2005], a causal effect is
+defined as the difference in *potential outcomes*. Letting $Y_{i}$ represent
+the observed outcome for each unit $i \in \{1,2,\dots, N\}$, $X_{i}$ the 
+observed treatment status for the $i^{th}$ unit, and $Z$ some set of
+measured confounders that influence both the treatment assignment mechanism
+and the observed outcome we can express the causal effect of a binary
+treatment as
+
+$$
+Y_{i}(X_{i} = 1, Z_{i}) - Y_{i}(X_{i} = 0, Z_{i})
+$$ {#eq-causal-effect}
+
+As equation @eq-causal-effect makes clear, a causal effect is the difference
+between the value of the outcome we observe under the treatment status $X_{i} = 1$ 
+for unit $i$ and the *counterfactual* and value of the outcome we would have 
+observed under $X_{i} = 0$.
+
+::: a
+In an ideal world, we could estimate unit-level treatment effects. In practice, 
+however, since for each unit $i$ we can observe the potential outcome $Y_{i}(X_{i} = 1)$
+or $Y_{i}(X_{i} = 0)$ but it is logically impossible to observe both. As such we 
+typically take as our estimand the treatment effect in some subset of the population. 
+For example, in a Bayesian framework we can express the posterior distribution of the
+population average treatment effect as
+
+$$
+\mathrm{PATE} = \int\mathrm{E[Y_{ij}(X_{ij} = 1, Z_{ij})]} - \mathrm{E[Y_{ij}(X_{ij} = 0, Z_{ij})]}d\mathrm{Z_{ij}}
+$$ {#eq-bayes-pate}
+
+Given a set of identifying assumptions, equation @eq-bayes-pate yields an estimate for the 
+posterior distribution of the expected change in the outcome if all of the units received 
+the treatment compared to what we would have observed if no unit was treated [@Oganisian2020]. 
+We can represent this process in the form of a DAG as shown in figure @fig-simple-dag, which 
+implies conditional on the set of measured confounders $Z = \{z_{1},z_{2}, z_{3}\}$, the 
+treatment assigment is as good as random thus identifying the causal path $X \longrightarrow Y$.
+There are several strategies one might take to close the backdoor confounding paths 
+$X \longleftarrow Z \longrightarrow Y$ including though not necessarily limited to 
+random assignment of the treatment, propensity-score based methods, and regression 
+adjustment. Since the topic of this post is statistical control, however, I limit 
+my focus here to regression adjustment.
+::: 
+
+```{r simple-dag, echo = FALSE, dev='svg'}
+#| label: fig-simple-dag
+#| fig-width: 16
+#| fig-height: 10
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Simple DAG for the Effect of X on Y where Z Denotes Observed Confounders and U is an Unobserved Confounder"
+#| 
+# Plotmath Labels for the DAG
+dag_labels_a <- list(
+    X = "X", Y = "Y", Z1 = "bold(Z[1])", 
+    Z2 = "bold(Z[2])", Z3 = "bold(Z[3])", U = "U"
+    )
+
+# Layout for the DAG
+dag_coords_a <- list(
+  x = c(X = -1, Y = 0, Z1 = -1, Z2 = 0, Z3 = 1, U = 1),
+  y = c(X = 0, Y = 0, Z1 = 1, Z2 = 1, Z3 = 1, U = 0)
+)
+
+
+# DAG for the assumed data generation process
+simple_dag_a <- dagify(
+  Y ~ X + Z1 + Z2 + Z3 + U,
+  X ~ Z1 + Z2 + Z3,
+  Z2 ~ Z1 + Z3 + U,
+  Z3 ~ U,
+  Z1 ~ U,
+  exposure = "X",
+  latent = "U",
+  outcome = "Y",
+  labels = dag_labels_a,
+  coords = dag_coords_a
+) %>% 
+  # Tidy the dagitty object
+  tidy_dagitty()
+
+# Adjust the length of the edges
+simple_dag_mod_a <- shorten_dag_arrows(
+  simple_dag_a, 
+  proportion = 0.08
+  ) %>% 
+  # Generate a vector of text colors
+  mutate(
+    .text_color = case_when(
+      name == "U" ~ "#7A0403FF",
+      name %in% c("Z1", "Z2", "Z3") ~ "#30123BFF",
+      name == "X" ~ "#4777EFFF",
+      name == "Y" ~ "#62FC6BFF"
+    )
+  )
+
+# Generate the DAG for the effect of X on Y
+ggplot(
+  simple_dag_mod_a, 
+  aes(
+    x = x, 
+    y = y, 
+    xend = xend, 
+    yend = yend
+  )) +
+  # Add the graph edges
+  geom_dag_edges(
+    aes(x = xstart, y = ystart), 
+    edge_width = 1.5,
+    arrow_directed = grid::arrow(
+      length = grid::unit(10, "pt"), 
+      type = "closed"
+      ),
+    edge_color = "black",
+    show.legend = FALSE
+  ) +
+  # Add the graph nodes
+  geom_dag_node(alpha = 0) +
+  # Add the graph text
+  geom_dag_text(
+    aes(label = label, colour = .text_color),
+    parse = TRUE,
+    size = 18,
+    family = "serif",
+    show.legend = FALSE
+  ) +
+  # Apply custom theme settings
+  dag_theme(.base_size = 24)
+```
+
+::: a
+Although adusting for the set of confounders $Z$ is sufficient to identify the 
+total effect of $X$ on $Y$, it would be erronous to assume, as many researchers do,
+this implies any of the confounders in the adjustment set $Z$ are also themselves 
+causally identified. In fact, based on the DAG in figure @fig-simple-dag, it is mathematically 
+impossible to simultaneously identify both $X$ and any variable in the set $Z$ due the biasing 
+paths $Z \longleftarrow U \longrightarrow Y$ where $U$ is an unobserved confounder. 
+That is, under ideal conditions regression adjustment can be used to estimate causal effects 
+in the abscence of random assignment. As a general rule, however, it is unlikely other covariates 
+in a regression model may be ascribed a valid causal interpretation without further assumptions 
+that are difficult to defend in practice.
+
+To further illustrate why the concept of *mutual adjustment* is fundamentally flawed, 
+consider the more complex data generation process depicted by the causal graph in figure 
+@fig-dgp-dag. As in the example above, $X$ is some exposure or treatment of interest, 
+$Y$ is the outcome, $\{Z, W, L, J\}$ is a set of measured confounders, 
+and $\{U, V\}$ are unobserved confounders.
+:::
+
+```{r dgp-dag, echo = FALSE, dev='svg'}
+#| label: fig-dgp-dag
+#| fig-width: 16
+#| fig-height: 10
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "DAG for a Hypothetical Data Generation Process"
+#| 
+# Plotmath Labels for the DAG
+dag_labels <- list(
+  X = "X", Y = "Y", Z = "Z", V = "V", 
+  W = "W", U = "U", L = "L", J = "J"
+  )
+
+# Layout for the DAG
+dag_coords <- list(
+  x = c(X = 0.5, Y = 1.25, Z = 0, V = 2, 
+        W = -1, L = 0.5, J = 2, U = -1),
+  y = c(X = 2.3, Y = 1.4, Z = 1.4, V = 0.75, 
+        W = 2, J = 2, L = 0.5, U = 0.75)
+)
+
+# DAG for the assumed data generation process
+sim_dag <- dagify(
+  Y ~ Z + L + X + V + J + W + U,
+  X ~ Z + W + J + L,
+  Z ~ W + U + L,
+  W ~ U,
+  L ~ U + V,
+  J ~ V,
+  exposure = "X",
+  latent = c("U", "V"),
+  outcome = "Y",
+  labels = dag_labels,
+  coords = dag_coords
+) %>% 
+  # Tidy the dagitty object
+  tidy_dagitty()
+
+# Adjust the length of the edges
+sim_dag_mod <- shorten_dag_arrows(
+  sim_dag, 
+  proportion = 0.08
+  ) %>% 
+  # Generate a vector of text colors
+  mutate(
+    .text_color = case_when(
+      name %in% c("U", "V") ~ "#7A0403FF",
+      name %in% c("J", "W", "Z", "L") ~ "#30123BFF",
+      name == "X" ~ "#4777EFFF",
+      name == "Y" ~ "#62FC6BFF"
+    )
+  )
+
+# Generate the DAG for the contemporaneous effect of X on Y
+ggplot(
+  sim_dag_mod, 
+  aes(
+    x = x, 
+    y = y, 
+    xend = xend, 
+    yend = yend
+  )) +
+  # Add the graph edges
+  geom_dag_edges(
+    aes(x = xstart, y = ystart), 
+    edge_width = 1.5,
+    arrow_directed = grid::arrow(
+      length = grid::unit(10, "pt"), 
+      type = "closed"
+      ),
+    edge_color = "black",
+    show.legend = FALSE
+  ) +
+  # Add the graph nodes
+  geom_dag_node(alpha = 0) +
+  # Add the graph text
+  geom_dag_text(
+    aes(label = label, color = .text_color),
+    parse = TRUE,
+    size = 18,
+    family = "serif",
+    show.legend = FALSE
+  ) +
+  # Apply custom theme settings
+  dag_theme(.base_size = 24)
+```
+
+::: a
+If our primary objective is to identify the causal path $X \longrightarrow Y$, this 
+can be acheived by adjusting for the set $\{Z, L, W, J\}$ as illustrated in figure @fig-simulation-dgp.[^1] 
+Although this set is sufficient to identify the path $X \longrightarrow Y$, it does not identify 
+other paths such as $J \longrightarrow Y$ or $Z \longrightarrow Y$ which are confounded by 
+the biasing paths $J \longleftarrow V \longrightarrow Y$ and $Z \longleftarrow U \longrightarrow Y$ 
+respectively. If this all seems abstract, you can simply substitute the letters representing 
+nodes in the figure above for theoretical constructs that are more familiar. The important 
+takeaway here is when using statistical adjustment as an empirical strategy, the relationship 
+between treatment and outcome is the path we care about and the adjustment set is a sacrifice 
+we make on the altar of causal identification.
+:::
+
+[^1]: In this case the adjustment sets necessary to identify the total and direct effect of $X$ on $Y$ are the same, but this may not be the case in other contexts.
+
+```{r simulation-dgp, echo = FALSE, dev='svg'}
+#| label: fig-simulation-dgp
+#| fig-width: 16
+#| fig-height: 10
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Data Generation Process for the Simulation Study"
+#| 
+# Adjust the length of the edges
+sim_dag_mod_x <- sim_dag_mod %>% 
+  # Generate a vector of text colors
+  mutate(
+    .edge_color = case_when(
+      name == "U" & to == "Z" ~ "red",
+      name %in% c("X", "Z") & to == "Y" ~ "blue",
+      TRUE ~ "black"
+    )
+  )
+
+# Generate the DAG for the contemporaneous effect of X on Y
+ggplot(
+  sim_dag_mod_x, 
+  aes(
+    x = x, 
+    y = y, 
+    xend = xend, 
+    yend = yend
+  )) +
+  # Add the graph edges
+  geom_dag_edges(
+    aes(x = xstart, y = ystart, edge_color = .edge_color), 
+    edge_width = 1.5,
+    arrow_directed = grid::arrow(
+      length = grid::unit(10, "pt"), 
+      type = "closed"
+      ),
+    show.legend = FALSE
+  ) +
+  # Add the graph nodes
+  geom_dag_node(alpha = 0) +
+  # Add the graph text
+  geom_dag_text(
+    aes(label = label, color = .text_color),
+    parse = TRUE,
+    size = 18,
+    family = "serif",
+    show.legend = FALSE
+  ) +
+  # Apply custom theme settings
+  dag_theme(.base_size = 24)
+```
+
+::: a
+Thus far I have levied several bold claims, some of which amount to accusing many 
+accomplished scholars of engaging in a practice that effectively amounts to the 
+propagation of pseudo-science. Although I have grounded this argument squarely in the 
+logic of causality, some readers may insist upon further illustration of just how wrong
+the practice of presenting and interpreting coefficients for nuisance parameters
+can be. After all, if we are able to justify the assumption the unobserved confounder $U$ is 
+conditionally independent of $Z$, it is possible to jointly identify the causal paths 
+$Z \longrightarrow Y$ and $X \longrightarrow Y$ based on the adjustment set
+$\{L, W, J\}$. 
+
+To demonstrate the magnitude of the problem, I simulate data based on the theoretical 
+process depicted in figure @fig-simulation-dgp, manipulating the path $U \longrightarrow Z$ 
+to assess the bias in the estimate for the causal effect of $Z$ on $Y$. I also vary the 
+dimensions of the data, considering 1,000, 5,000, and 10,000 observations and repeat the 
+simulation 250 times per cell, resulting in 1,500 unique datasets.
+
+To provide a breif overview of the simulation design, I begin by drawing fixed values for the 
+unobserved confounders $U$ and $V$ at 1.5 and 0.5, respectively. The path coefficients 
+$\gamma_{k}$ for the dependencies between nodes are then drawn from a normal distribution 
+such that $\gamma_{k} \sim \mathrm{Normal(0.5, 0.5)}$ for $k \in \{1, \dots, K\}$. The 
+treatment propensity $\theta$ for the exposure $X$ and the measured confounders are then each a 
+function of their respective ancestor nodes and random noise $\sigma \sim \mathrm{Normal(0, 0.1)}$ 
+as follows
+
+$$
+\begin{align}
+Z_{i} &\sim \gamma_{5}W + \gamma_{6}L_{i} + \delta U + \sigma_{Z}\\
+L_{i} &\sim \gamma_{3}U_{i} + \gamma_{4}V_{i} + \sigma_{L}\\
+J_{i}&\sim \gamma_{2}V + \sigma_{J}\\
+W_{i} &\sim \gamma_{1}U + \sigma_{W}\\
+\end{align}
+$$ and for the observed treatment
+
+$$
+\begin{align}
+X_{i} &\sim \mathrm{Bernoulli}(\theta_{i})\\
+\theta_{i} &= \mathrm{logit}^{-1}(\gamma_{7}Z_{i} + \gamma_{8} W_{i} + \gamma_{9} J_{i} + \gamma_{10} L_{i} + \sigma_{X})\\
+\end{align}
+$$
+::: 
+
+where the $\delta U$ in the equation for $Z$ represents the experimental manipulation. 
+
+::: a
+Finally, the outcome $Y_{i}$ is a function of a fixed intercept $\alpha$, coefficients for
+each parameter $\beta_{k}$, the unobserved confounders $U$ and $V$, and a random noise term $\sigma$ 
+as expressed in equation @eq-outcome-dgp
+::: 
+
+$$
+Y_{i} \sim \alpha + \beta_{1}X_{i} + \beta_{2}Z_{i} + \beta_{3}L_{i} + \beta_{4}W_{i} + \beta_{5}J_{i} + V + U + \sigma
+$${#eq-outcome-dgp}
+
+where $\alpha = 0.50$ and $\sigma~\sim~\mathrm{Normal}(0, 0.5)$. 
+
+::: a
+Under this assumed DGP, the true value of $Z$ should be recoverable if and only if the unobserved 
+confounder $U$ is conditionally independent of $Z$. On the other hand, all of the covariates in the
+adjustment set $\{J, W, L\}$ can be expected to exhibit severe bias due to unobserved confounding. 
+Code for simulating the data in R and Python is shown below.
+:::
+
+::: panel-tabset
+### R
+
+```{r}
+# Simulated DGP Based on the DAG in Figure 2
+sim_dag_data <- function(N, a, b, cond, conf) {
+  # Coefficients for ancestor nodes
+  g <- rnorm(10, 0.5, 0.5)
+    
+  # Unobserved Confounders U and V
+  V <- conf[1] + rnorm(N, 0, 0.1)
+  U <- conf[2] + rnorm(N, 0, 0.1)
+    
+  # Measured Confounders {Z, L, J, W}
+  W <- g[1] * U + rnorm(N, 0, 0.1)
+  J <- g[2] * V + rnorm(N, 0, 0.1)
+  L <- g[3] * U + g[4] * V + rnorm(N, 0, 0.1)
+  Z <- g[5] * W + (U * cond) + g[6] * L + rnorm(N, 0, 0.1)
+    
+  # Treatment X
+  X <- g[7] * Z + g[8] * W + g[9] * J + g[10] * L + rnorm(N, 0, 0.1)
+  X = purrr::rbernoulli(N, p = plogis(X))
+    
+  # Linear Predictor Data Generation Process
+  mu <- b[1] * X + b[2] * Z + b[3] * L + b[4] * J + b[5] * W
+    
+  # Observed Response Y
+  Y <- a + mu + U + V + rnorm(N, 0, 0.2)
+    
+  # Combine everything into a data frame
+  out <- data.table(X, Z, L, J, W, Y)
+
+  # Return just the data table
+  return(out)
+} 
+```
+
+### Python
+
+```python
+# Required dependencies for the DAG data
+from numpy.random import normal as rnorm
+from numpy.random import uniform as runif
+from numpy.random import binomial as rbinom
+from numpy import exp, repeat
+from polars import DataFrame, Series
+
+# Inverse Logistic Transformation
+def inv_logit(logit_theta):
+  prob = exp(logit_theta)/(1 + exp(logit_theta))
+  return prob
+
+# Simulated DGP Based on the DAG in Figure 1
+def sim_dag_data(N, a, b, cond, conf):
+  # Coefficients for ancestor nodes
+  g = rnorm(0.5, 0.5, 10)
+    
+  # Unobserved Confounders U and V
+  V = conf["V"] + rnorm(0, 0.1, N)
+  U = conf["U"] + rnorm(0, 0.1, N)
+    
+  # Measured Confounders {Z, L, J, W}
+  W = g[0] * U + rnorm(0, 0.1, N)
+  J = g[1] * V + rnorm(0, 0.1, N)
+  L = g[2] * U + g[3] * V + rnorm(0, 0.1, N)
+  Z = g[4] * W + (U * cond) + g[5] * L + rnorm(0, 0.1, N)
+    
+  # Treatment X
+  logit_theta = g[6] * Z + g[7] * W + g[8] * J + g[9] * L + rnorm(0, 0.1, N)
+  theta = inv_logit(logit_theta)
+  X = rbinom(n = 1, p = theta, size = N)
+    
+  # Linear Predictor Data Generation Process
+  mu = b["X"] * X + b["Z"] * Z + b["L"] * L + b["J"] * J + b["W"] * W
+    
+  # Observed Response Y
+  Y = a + mu + U + V + rnorm(0, 0.2, N)
+  
+  # Store the Condition
+  cond = Series(repeat(cond, N))
+
+  # Combine everything into a data frame
+  out = {"X": X, "Z": Z, "L": L, "J": J, "W": W, "Y": Y, "Condition": cond}
+  return DataFrame(out)
+```
+:::
+
+::: a
+Since this is a Bayesian statistics blog, we'll specify the model and estimate the parameters using 
+Hamiltonian Monte Carlo (HMC), though the concept outlined above holds regardless of inferential 
+framework and takiing a Bayesian approoach may in fact be constraining how severe the bias in the
+parameter estimates can be.[^2] Our model here takes the following form
+::: 
+
+[^2]: One could also simply specify a frequentist prior here by assuming that all parameter values between $-\infty$ and $\infty$ are equally likely.
+
+$$
+\begin{align}
+y_{i} &\sim \mathcal{N}(\mu, \sigma)\\
+\mu &= \alpha + X_{n}\beta_{k} + \sigma\\
+\text{with priors}\\
+\alpha &\sim \mathrm{Normal}(\bar{y}, ~2\cdot\sigma_{y})\\
+\beta_{k} &\sim \mathrm{Normal}\left(0, ~2 \cdot \frac{\sigma_{y}}{\sigma_{x_{k}}}\right) ~ \mathrm{for~} k \in \{1,\dots,K\}\\
+\sigma &\sim \mathrm{Exponential}\left(\frac{1}{\sigma_{y}}\right)
+\end{align}
+$${#eq-model-formula}
+
+where priors in equation @eq-model-formula are specified based on the scaling approach outlined in @Gelman2021 
+and thus automatically adjusted to be weakly informative for each of the simulated datasets. We can specify the model 
+in Stan as follows
+
+```stan
+data {
+  int<lower=1> N; // Observations
+  int<lower=1> K; // Population-Level Coefficients
+  vector[N] Y; // Response
+  matrix[N, K] P; // Design Matrix for the Fixed Effects
+  vector[K] truth; // True Values of the Coefficients
+}
+
+transformed data {
+  // Centering the Design Matrix
+  matrix[N, K] X;  // Centered version of P
+  vector[K] X_means; // Column Means of P
+  vector[K] X_sd; // Column SDs of P
+  for (i in 1:K) {
+    X[, i] = P[, i] - mean(P[, i]);
+    X_means[i] = mean(P[, i]);
+    X_sd[i] = sd(P[, i]);
+  }
+
+  // Data for the Intercept priors
+  real mu_alpha;
+  real sigma_alpha;
+  mu_alpha = mean(Y);
+  sigma_alpha = 2 * sd(Y);
+
+  // Data for the Coefficient priors
+  vector[K] beta_sd;
+  beta_sd = 2 * sd(Y)/X_sd;
+
+  // Prior for the residual sd
+  real sigma_prior;
+  sigma_prior = 1/sd(Y);
+}
+
+parameters {
+  real alpha; // Intercept for the Centered Predictors
+  vector[K] beta; // Regression Coefficients
+  real<lower = 0> sigma; // Residual Noise
+}
+
+model {
+  // Likelihood
+  target += normal_id_glm_lpdf(Y | X, alpha, beta, sigma);
+
+  // Priors on the parameters
+  target += exponential_lpdf(sigma | sigma_prior);
+  target += normal_lpdf(alpha | mu_alpha, sigma_alpha);
+  target += normal_lpdf(beta | 0, beta_sd);
+}
+
+generated quantities {
+  // Recover the Non-Centered Intercept and Coefficients
+  real Intercept = alpha - dot_product(beta, X_means);
+
+  // Bias in the Parameter Estimates
+  vector[K] bias;
+  bias = truth - beta;
+}
+```
+
+::: a
+Although the models themselves only take a second or two to fit, repeating the process
+1,500 times quickly becomes computationally burdensome. It is possible to side-step this
+problem by defining functions to prepare the data and fit models in parallel via the 
+`{furrr}` package and `{cmdstanr}` as shown below. The `make_stan_data` function
+prepares the simulated datasets to be passed to Stan while the `sim_bayes` function
+fits the models and returns the necessary `draws_df` object containing the estimated
+parameters and generated quantities. This approach reduces the wall time for the simulations
+from an hour to about twenty minutes.
+:::
+
+::: panel-tabset
+
+### Functions
+```r
+# Function for Building the Data to Pass to the Stan Model
+make_stan_data <- function(sim_data, truth, ...) {
+  
+  # Predictor Positions
+  x_pos <- grep("[J-X]|Z", colnames(sim_data))
+  
+  # Extract the predictor matrix
+  P <- sim_data[, ..x_pos]
+  
+  # Extract the response
+  Y <- sim_data$Y
+  
+  # Prepare the data for use with Stan
+  stan_data <- list(
+    N = nrow(P), # Observations
+    K = ncol(P), # K Predictors
+    Y = Y, # Response
+    P = P, # Design Matrix
+    truth = truth
+  )
+  
+  # Return the list of data
+  return(stan_data)
+}
+
+# Function for fitting the Stan Models in Parallel
+sim_bayes <- function(stan_model, 
+                      truth,
+                      sim_data,
+                      sampling, 
+                      warmup, 
+                      seed, 
+                      chains,
+                      ...) {
+  
+  # Prepare the Stan Data
+  stan_data <- make_stan_data(sim_data, truth)
+  
+  # Set the initial number of draws to 0
+  min_draws <- 0
+  
+  # Repeat the run if any of the chains stop unexpectedly
+  while (min_draws < (sampling * chains)) {
+    
+    # Fit the Stan Model
+    sim_fit <- stan_model$sample(
+      data = stan_data,
+      sig_figs = 5,
+      parallel_chains = chains,
+      iter_warmup = warmup,
+      iter_sampling = sampling,
+      max_treedepth = 12,
+      adapt_delta = 0.9,
+      seed = seed,
+      show_messages = FALSE,
+      ...
+    )
+    
+    # Update the check
+    min_draws <- posterior::ndraws(sim_fit$draws())
+  }
+  
+  # Extract the posterior draws
+  sim_draws <- sim_fit$draws(format = "draws_df")
+  
+  # Return the data frame of draws
+  return(sim_draws)
+}
+```
+
+### Data Simulation
+```r
+# Load the necessary libraries
+pacman::p_load(
+  "tidyverse",
+  "data.table",
+  "cmdstanr",
+  "posterior",
+  "bayesplot",
+  "furrr",
+  install = FALSE # Set this to true to install missing packages
+)
+
+# Set the initial rng seed
+set.seed(12345)
+
+# True Values for the Coefficients
+betas <- c(-0.5, 0.00, 0.5, 0.00, 0.5)
+names(betas) <- c("X", "Z", "L", "J", "W")
+
+# Simulate 1,500 datasets of varying dimensions 
+sim_data_df <- expand.grid(
+  N = c(1e3, 5e3, 10e3),
+  delta = c(FALSE, TRUE),
+  rep = 1:250
+) %>%
+  # Nest the data by columns
+  nest(sim_pars = c(delta, N)) %>%
+  # Simulate the datasets
+  mutate(sim_data = map(
+    .x = sim_pars,
+    ~ map2(
+      .x = .x$delta,
+      .y = .x$N,
+      ~ sim_dag_data(
+        N = .y, 
+        a = 0.5, 
+        b = betas, 
+        cond = .x,
+        conf = c(0.5, 1.5)
+      ))
+  )) %>%
+  # Unnest the data dimensions
+  unnest(cols = c(sim_pars, sim_data))
+```
+
+### Estimation
+```r
+# Compile the Stan model
+sim_mod <- cmdstan_model("bayes-linreg.stan")
+
+# Parallel computation via furrr
+plan(tweak(multisession, workers = 3))
+
+# Fit models and add the draws to the simulation data frame
+sim_draws_df <- sim_data_df %>% 
+  mutate(sim_draws = future_map(
+    .x = sim_data,
+    .f = ~ sim_bayes(
+      sim_data = .x,
+      stan_model = sim_mod,
+      truth = betas,
+      sampling = 1e3,
+      warmup = 1e3,
+      seed = 12345,
+      chains = 4,
+      refresh = 1e3
+    ),
+    .options = furrr_options(
+      scheduling = 1,
+      seed = TRUE,
+      prefix = "prefix"
+    ),
+    .progress = TRUE
+  ))
+
+# Back from the future
+plan(sequential)
+```
+
+### Post-Estimation
+```r
+```
+:::
+
+Anything in figure @fig-dgp-dag that isn't $X$ is a **nuisance parameter** and generally should not be presented or 
+interpreted as if their respective coefficient or marginal effect estimate has some causal meaning. 
+
+Some readers may wonder whether this applies to analyses whose aims are primarily descriptive 
+or exploratory in nature whether implicitly or explicitly stated. Since identifying 
+relevant confounders is a process that must be informed and justified by theory, the need to adjust for 
+potentially confounding factors itself implies causal aims as does any reporting or reliance on arbitrary 
+decision rules such as "statistical significance" as a means of establishing whether a relationship exists
+[@Wysocki2022]. Indeed, outside of a causal framework p-values have no meaning or valid interpretation.
+
+They 
+most certainly are not, as someone recently said to me, "a part of your contribution to existing research." 
+In fact, since presenting and interpreting hopelessly confounded coefficient estimates or marginal effects 
+encourages those reading your work to do the same, those who persist in committing the table 2 fallacy or 
+encourage others to do so are actively harming the pursuit of knowledge in their field by peddling pseudo-science.
+
+# References

@@ -1,0 +1,42 @@
+# Date format
+date-format: long
+
+# Add blog-post class to the banner header area
+format: 
+  html:
+    code-tools: true
+    comments:
+      giscus: 
+        repo: ajnafa/ajnafa-website-quarto
+        category: Blog Comments
+        category-id: DIC_kwDOInjb3s4CTFM-
+        mapping: pathname
+        reactions-enabled: true
+        loading: lazy
+    quarto-template-params:
+      banner-header-class: "blog-post"
+
+# Default for table of contents
+toc: true
+toc-title: Contents
+toc-location: body
+
+# Default knitr options
+execute:
+  echo: true
+  message: true
+  warning: true
+  freeze: auto
+
+# Default author
+author:
+  - name: A. Jordan Nafa
+    url: https://www.ajordannafa.com/
+    orcid: 0000-0001-5574-3950
+
+tbl-cap-location: top
+fig-cap-location: top
+crossref: 
+  tbl-prefix: ""
+  fig-prefix: ""
+  eq-prefix: ""
