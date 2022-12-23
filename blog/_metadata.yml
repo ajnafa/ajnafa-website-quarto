@@ -5,6 +5,16 @@ date-format: long
 format: 
   html:
     code-tools: true
+    comments:
+      giscus: 
+        repo: ajnafa/ajnafa-website-quarto
+        repo-id: "R_kgDOInjb3g"
+        category: "Announcements"
+        category-id: "DIC_kwDOInjb3s4CTFM-"
+        mapping: pathname
+        reactions-enabled: true
+        input-position: "top"
+        theme: "dark"
     quarto-template-params:
       banner-header-class: "blog-post"
 
