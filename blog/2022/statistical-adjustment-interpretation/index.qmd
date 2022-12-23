@@ -374,7 +374,7 @@ ggplot(
 ```
 
 ::: a
-Although adusting for the set of confounders $Z$ is sufficient to identify the 
+Although adjusting for the set of confounders $Z$ is sufficient to identify the 
 total effect of $X$ on $Y$, it would be erronous to assume, as many researchers do,
 this implies any of the confounders in the adjustment set $Z$ are also themselves 
 causally identified. In fact, based on the DAG in figure @fig-simple-dag, it is mathematically 
@@ -1075,7 +1075,7 @@ underscoring the reality that "big data" is not a substitute for experimental de
 ```{r type-m-error, echo = FALSE, dev='svg'}
 #| label: fig-type-m-error
 #| fig-width: 16
-#| fig-height: 10
+#| fig-height: 14
 #| fig-align: center
 #| fig-dpi: 300
 #| fig-cap: "Average Parameter Bias in Models that Do not Recover the True Value"
@@ -1146,9 +1146,9 @@ inquiry and research more broadly is *to be less wrong*.
 
 The important takeaway here is anything other than $X$ or whatever your main feature of interest 
 happens to be, is a **nuisance parameter** and generally should not be presented or interpreted as 
-if its respective coefficient or marginal effect estimate has some causal meaning because the 
+if its respective coefficient or marginal effect estimate has some causal meaning. The 
 chances your research design is capable of identifying every variable included in a model are 
-virtually guaranteed to be zero. These estimates most certainly are not, as a collegue recently suggested, 
+virtually guaranteed to be zero and these estimates most certainly are not, as a collegue recently suggested, 
 "a part of your contribution to existing research." In fact, since presenting and interpreting hopelessly 
 confounded coefficient estimates or marginal effects encourages those reading your work to do the same, 
 those who persist in committing the table 2 fallacy or encourage others to do so are actively harming 
@@ -1187,7 +1187,7 @@ and logical fallacies are learned behaviors oweing to the reality that graduate-
 social sciences is often taught entirely independent of any meaningful causal foundation. Students are 
 instructed to interpret everything with the justification being that "they need experience in interpreting 
 coefficients/marginal effects." Yet, this has the unintended consequence of instilling in them that
-such an approach should be taken in their own work and they then go onto to teach their future students 
+such an approach should be taken in their own work and they then go on to teach their future students 
 those same poor practices. Before long, this results in entire fields in which presumed knowledge rests
 upon castles of sand and hinders scientific progress.
 ::: 
