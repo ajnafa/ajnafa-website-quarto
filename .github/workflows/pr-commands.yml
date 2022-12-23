@@ -27,8 +27,6 @@ jobs:
             any::xml2
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          version: pre-release
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
       - name: commit
