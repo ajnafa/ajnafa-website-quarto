@@ -7,8 +7,8 @@ format:
     code-tools: true
     comments:
       utterances: 
-          repo: ajnafa/ajnafa-website-quarto
-          theme: github-dark
+        repo: ajnafa/ajnafa-website-quarto
+        theme: github-dark
     quarto-template-params:
       banner-header-class: "blog-post"
 
