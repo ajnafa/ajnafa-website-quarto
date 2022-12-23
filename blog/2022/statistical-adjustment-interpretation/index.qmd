@@ -694,7 +694,7 @@ def sim_dag_data(N, a, b, cond, conf):
 ::: a
 Since this is a Bayesian statistics blog, we'll specify the model and estimate the parameters using 
 Hamiltonian Monte Carlo (HMC), though the concept outlined above holds regardless of inferential 
-framework and takiing a Bayesian approoach may in fact be constraining how severe the bias in the
+framework and taking a Bayesian approach may in fact be constraining how severe the bias in the
 parameter estimates can be.[^2] Our model here takes the following form
 ::: 
 
@@ -1164,14 +1164,14 @@ focus on the feature of the world they case about. If one is interested in a rel
 implementation of gender quotas and women's representation in government, for example, one should simply
 focus on estimating the impact of quota adoption on the representation of women in government rather than
 wasting words opining about political corruption, electoral systems, or some other nuisance parameter.[^5] One 
-might attempt tp object on the grounds that incompetent reviewers often demand otherwise principled 
+might attempt to object on the grounds incompetent reviewers often demand otherwise principled 
 researchers engage in poor statistical practices but this is easily solved by placing all relevant tables 
 in the appendix and adhereing to the common sense guideline that one should never present in a table what 
 could be communicated in a graph. This post and the recommendations herein are broadly applicable in both 
 experimental and observational contexts. The problem remains prevelant in both top tier journals and those 
 with less prestige.
 
-[^5]: In many ways this reccomendation echoes that made by @Huenermund2020
+[^5]: In many ways this recommendation echoes that made by @Huenermund2020
 
 ::: a
 Of course, encouraging researchers to improve their own practices is only half the battle because bad habits 
