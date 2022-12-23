@@ -1130,7 +1130,7 @@ sim_draws_bias %>%
 ```
 
 ::: a
-As @tbl-coverage-probs illustrated, if we present and interpret $L$ or $J$, or $W$ as if they are total effect
+As table @tbl-coverage-probs illustrated, if we present and interpret $L$ or $J$, or $W$ as if they are total effect
 estimates, we will on average be wrong 88.5%, 91.6%, and 78.4% of the time, respectively. Likewise, if
 the assumption that $U$ and $Z$ are conditionally independent fails, our chance of being wrong is 99.6%.
 This makes the practice of reporting and interpreting nuisance parameters in tables--often filled with

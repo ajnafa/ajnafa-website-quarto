@@ -1,4 +1,4 @@
 - source: project
   netlify:
-    - id: "446944fb-4059-4bd1-bc35-573ffc88bf41"
-      url: "https://www.ajordannafa.com"
+    - id: 446944fb-4059-4bd1-bc35-573ffc88bf41
+      url: 'https://www.ajordannafa.com'

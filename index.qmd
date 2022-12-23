@@ -27,8 +27,7 @@ about:
 Welcome to my personal website. I am a Quantitative Social Scientist and Teaching Fellow in the [Department of Political Science](https://politicalscience.unt.edu/) at 
 the [University of North Texas](https://www.unt.edu/). I have five years' experience working both independently and in collaboration with colleagues to model data and 
 provide insights necessary to answer research questions. My core skills include research design, causal inference, quasi-experimental methods, multilevel analysis, 
-advanced data analytics in R, Stan, and Python, survey research, and applied Bayesian inference.  For an overview of various services I offer related to statistical 
-analysis and data wrangling, check out the [consulting page](consulting/index.qmd) of the site.
+advanced data analytics in R, Stan, and Python, survey research, and applied Bayesian inference.
 
 ::: a
 At present, my work is focused at the intersection of applied Bayesian statistics and causal inference with a substantive focus on women in politics and comparative 
