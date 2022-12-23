@@ -1,0 +1,2 @@
+For an overview of various services I offer related to statistical 
+analysis and data wrangling, check out the [consulting page](consulting/index.qmd) of the site.

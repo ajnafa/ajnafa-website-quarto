@@ -9,6 +9,13 @@ citation: true
 code-tools: true
 resources: 
   - "data/sim_draws_summ.rds"
+categories:
+  - R
+  - Bayesian Statistics
+  - Causal Inference
+  - Statistics
+  - Stan
+  - Simulation
 ---
 
 <style>
