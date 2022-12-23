@@ -33,3 +33,6 @@ crossref:
   tbl-prefix: ""
   fig-prefix: ""
   eq-prefix: ""
+
+execute:
+  freeze: true
