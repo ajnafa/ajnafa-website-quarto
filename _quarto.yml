@@ -28,8 +28,8 @@ website:
         text: Blog
       - href: "assets/media/Nafa, A. Jordan_Resume_December-2022.pdf"
         text: Resume/CV
-      - href: "consulting/index.qmd"
-        text: Consulting
+      #- href: "consulting/index.qmd"
+      #  text: Consulting
       - href: "projects/index.qmd"
         text: Projects
     right:

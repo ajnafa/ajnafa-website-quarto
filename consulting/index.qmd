@@ -1,0 +1,19 @@
+---
+title: "Consulting Services"
+image: ../assets/media/posterior-odds-logo.png
+linkstyle: normal
+about:
+  template: solana
+  image-width: 18em
+  links:
+    - icon: envelope
+      href: mailto:adamjnafa@gmail.com
+      text: Contact
+    - icon: github
+      href: https://github.com/ajnafa
+      text: Github
+    - icon: linkedin
+      href: https://www.linkedin.com/in/a-jordan-nafa/
+      text: LinkedIn
+---
+

@@ -1,0 +1,32 @@
+---
+title: "Research and Projects"
+toc: true
+---
+
+My current work centers around applied Bayesian statistics and causal inference in the social sciences with a substantive focus on comparative political behavior, descriptive representation, and women in politics.
+
+## Working Papers
+
+::: {.references}
+Nafa, A. Jordan and Andrew Heiss. "Taking Uncertainty Seriously: Bayesian Marginal Structural Models for Causal Inference in Political Science." Paper presented at the American Political Science Association’s Annual Meeting in Montreal, Quebec, September 15–18, 2022. <i style = "padding-left: 1.5em;">[{{< fa brands github size=1.5x  title="Github" >}}](https://github.com/ajnafa/Latent-Bayesian-MSM)</i> <i style = "padding-left: 1.5em;">[{{< fa file-pdf size=1.5x  title="PDF" >}}](https://github.com/ajnafa/Latent-Bayesian-MSM/blob/main/manuscript/output/Nafa%20and%20Heiss%20(2022)_Taking-Uncertainty-Seriously-APSA.pdf)</i> <i style = "padding-left: 1.5em;">[{{< fa file-powerpoint size=1.5x  title="Presentation" >}}](https://github.com/ajnafa/Latent-Bayesian-MSM/raw/main/presentation/Taking-Uncertainty-Seriously_Bayesian-Marginal-Structural-Models-for-Causal%20Inference.pdf)</i> 
+::: 
+
+::: {.references}
+Nafa, A. Jordan, Meredith Walsh Niezgoda, P. Deanne Roark, and Valerie Martinez-Ebers. “Stronger Together? Linked Fate and Voter Preferences in the 2020 Election.” Paper presented at the American Political Science Association’s Annual Meeting in Montreal, Quebec, September 15–18, 2022. <i style = "padding-left: 1.5em;">[{{< fa brands github size=1.5x  title="Github" >}}](https://github.com/ajnafa/linked-fate-paper)</i> <i style = "padding-left: 1.5em;">[{{< fa file-word size=1.5x  title="Word" >}}](https://github.com/ajnafa/linked-fate-paper/raw/main/manuscript/ms-word/Stronger-Together-Draft-Rev3.docx)</i> <i style = "padding-left: 1.5em;">[{{< fa file-pdf size=1.5x  title="PDF" >}}](https://github.com/ajnafa/linked-fate-paper/raw/main/manuscript/latex/Stronger-Together-Draft-TeX.pdf)</i> <i style = "padding-left: 1.5em;">[{{< fa file-powerpoint size=1.5x  title="Presentation" >}}](https://github.com/ajnafa/linked-fate-paper/raw/main/manuscript/presentation/apsa-presentation.html)</i> 
+::: 
+
+::: {.references}
+Nafa, A. Jordan and P. DeAnne Roark. "Broadening the Base? How Female Rebels Impact the Political Transition and Survival of Rebel Parties." Paper presented at the International Studies Association’s Annual Meeting in Nashville, Tennessee, March 28–April 2, 2022. <i style = "padding-left: 1.5em;">[{{< fa brands github size=1.5x  title="Github" >}}](https://github.com/ajnafa/female-rebels-paper)</i> 
+::: 
+
+::: {.references}
+Nafa, A. Jordan. "From Seeing to Believing? How Female Representation Shapes Support for Democracy." Paper presented at the Southern Political Science Association’s Annual Meeting in San Antonio, Texas, January 13–15, 2022. <i style = "padding-left: 1.5em;">[{{< fa brands github size=1.5x  title="Github" >}}](https://github.com/ajnafa/representation-support-paper)</i>
+::: 
+
+::: {.references}
+Benton, Amber Rose and A. Jordan Nafa. "Climate Catastrophes and Environmental Policy Preferences: A Subnational Analysis." Paper presented at the Southern Political Science Association’s Annual Meeting in San Antonio, Texas, January 13–15, 2022. <i style = "padding-left: 1.5em;">{{< fa brands github size=1.5x  title="Github" >}}</i>
+::: 
+
+::: {.references}
+Roark, P. DeAnne and A. Jordan Nafa. "The Threat from Within: Intrastate Armed Conflict and Female Representation in Democratic Legislatures." Paper presented at the International Studies Association’s Midwestern division’s annual meeting in St. Louis, Missouri, November 19–21, 2021. <i style = "padding-left: 1.5em;">{{< fa brands github size=1.5x  title="Github" >}}</i> 
+::: 
