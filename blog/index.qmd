@@ -8,5 +8,6 @@ listing:
 date-format: long
 code-tools: false
 comments: false
+citation: false
 ---
 

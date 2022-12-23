@@ -3,7 +3,7 @@ project:
   render:
     - "*.qmd"
   resources:
-    - "assets/**"
+    - "assets/**/**"
 
 execute:
   freeze: auto
@@ -12,9 +12,25 @@ website:
   title: "A. Jordan Nafa"
   image: "assets/media/icon.svg"
   favicon: "assets/media/icon.svg"
-  description: A. Jordan Nafa's Personal Website and Bayesian Statistics Blog
-  site-url: https://www.ajordannafa.com/
-  site-path: /
+  description: "A. Jordan Nafa's Personal Website and Bayesian Data Science Blog"
+  site-url: https://www.ajordannafa.com
+  repo-url: https://github.com/ajnafa/ajnafa-website-quarto
+  repo-actions: [edit, issue]
+
+  # Social Media Information
+  open-graph:
+    title: "A. Jordan Nafa"
+    description: "A. Jordan Nafa's Personal Website and Bayesian Data Science Blog"
+    locale: en_US
+    image: "assets/media/twitter-card-large-bw.png"
+
+  twitter-card: 
+    title: "A. Jordan Nafa"
+    image: "assets/media/twitter-card-large-bw.png"
+    card-style: summary_large_image
+    description: "A. Jordan Nafa's Personal Website and Bayesian Data Science Blog"
+    creator: "@adamjnafa"
+    site: "@adamjnafa"
 
   # Navigation Bar Settings
   navbar:
@@ -57,17 +73,6 @@ website:
     background: "#1a1a1a"
     foreground: "#ffffff"
 
-  # Social Media Information
-  open-graph:
-    locale: en_US
-    image: "assets/media/twitter-card-large-bw.png"
-
-  twitter-card: 
-    image: "assets/media/twitter-card-large-bw.png"
-    card-style: summary_large_image
-    creator: "@adamjnafa"
-    site: "@adamjnafa"
-
   # Google Analytics
   google-analytics: "G-9M71770F2F"
 
@@ -84,7 +89,6 @@ format:
     code-block-bg: "#272822"
     code-fold: show
     include-in-header: "assets/js/math-colors.js"
-
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"

@@ -5,20 +5,21 @@ date-format: long
 format: 
   html:
     code-tools: true
+    comments:
+      giscus: 
+        repo: "ajnafa/ajnafa-website-quarto"
+        repo-id: "R_kgDOInjb3g"
+        theme: dark_dimmed
+        category: "Blog Comments"
+        category-id: "DIC_kwDOInjb3s4CTFOA"
     quarto-template-params:
       banner-header-class: "blog-post"
+    citation: true
 
 # Default for table of contents
 toc: true
 toc-title: Contents
 toc-location: body
-
-# Default knitr options
-execute:
-  echo: true
-  message: true
-  warning: true
-  freeze: auto
 
 # Default author
 author:
