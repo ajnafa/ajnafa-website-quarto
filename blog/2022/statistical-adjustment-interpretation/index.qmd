@@ -13,11 +13,6 @@ categories:
   - Simulation
 ---
 
-<style>
-.column { padding-right: 1ex }
-.column + .column { padding-left: 1ex }
-</style>
-
 $$
 \newcommand{\indep}{\perp \!\!\! \perp}
 $$

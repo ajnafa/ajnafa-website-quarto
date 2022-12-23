@@ -9,11 +9,9 @@ format:
       giscus: 
         repo: "ajnafa/ajnafa-website-quarto"
         repo-id: "R_kgDOInjb3g"
-        theme: dark_dimmed
+        theme: preferred_color_scheme
         category: "Blog Comments"
         category-id: "DIC_kwDOInjb3s4CTFOA"
-    quarto-template-params:
-      banner-header-class: "blog-post"
     citation: true
 
 # Default for table of contents
@@ -35,4 +33,4 @@ crossref:
   eq-prefix: ""
 
 execute:
-  freeze: true
+  freeze: auto
