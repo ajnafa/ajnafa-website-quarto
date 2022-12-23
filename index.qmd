@@ -33,6 +33,6 @@ advanced data analytics in R, Stan, and Python, survey research, and applied Bay
 At present, my work is focused at the intersection of applied Bayesian statistics and causal inference with a substantive focus on women in politics and comparative 
 political behavior. More information on my background and recent projects can be found on the [about](about/index.qmd) and [projects](projects/index.qmd) sections 
 of the site or my [github](https://github.com/ajnafa), respectively. I also write occasional [blog posts](blog/index.qmd) on applied Bayesian statistics, causal 
-inference, and data science.S
+inference, and data science.
 :::
 
