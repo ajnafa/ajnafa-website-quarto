@@ -1,6 +1,7 @@
 ---
 title: "Error 404: Page Not Found"
 title-block-banner: false
+comments: false
 ---
 
 The page or item you’re looking for either isn’t here or is still under construction! Please verify you have the correct URL or check back later to see if the page your searching for has been updated.

@@ -5,14 +5,6 @@ date-format: long
 format: 
   html:
     code-tools: true
-    comments:
-      giscus: 
-        repo: ajnafa/ajnafa-website-quarto
-        category: "Blog Comments"
-        category-id: "DIC_kwDOInjb3s4CTFOA"
-        mapping: pathname
-        reactions-enabled: true
-        loading: lazy
     quarto-template-params:
       banner-header-class: "blog-post"
 

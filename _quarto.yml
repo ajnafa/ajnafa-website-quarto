@@ -84,6 +84,15 @@ format:
     code-block-bg: "#272822"
     code-fold: show
     include-in-header: "assets/js/math-colors.js"
+    comments:
+      giscus: 
+        repo: ajnafa/ajnafa-website-quarto
+        category: "Blog Comments"
+        category-id: "DIC_kwDOInjb3s4CTFOA"
+        mapping: pathname
+        reactions-enabled: true
+        input-position: top
+        theme: "dark"
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"

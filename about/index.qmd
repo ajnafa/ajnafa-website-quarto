@@ -2,6 +2,7 @@
 title: "A. Jordan Nafa"
 image: ../assets/media/avatar.jpg
 linkstyle: normal
+comments: false
 about:
   template: jolla
   image-width: 18em
