@@ -1160,20 +1160,21 @@ been and continues to be misguided.
 ## Conclusion
 
 The overarching and unnecessarily long-winded point of this post is that applied researchers should
-focus on the feature of the world they case about. If one is interested in a relationship between the
+focus on the feature of the world they care about. If one is interested in a relationship between the
 implementation of gender quotas and women's representation in government, for example, one should simply
 focus on estimating the impact of quota adoption on the representation of women in government rather than
-wasting words opining about political corruption, electoral systems, or some other nuisance parameter.[^5] One 
-might attempt to object on the grounds incompetent reviewers often demand otherwise principled 
+wasting words opining about political corruption, electoral systems, or some other nuisance parameter.[^5] 
+
+[^5]: In many ways this recommendation echoes that made by @Huenermund2020
+
+::: a
+One might attempt to object on the grounds incompetent reviewers often demand otherwise principled 
 researchers engage in poor statistical practices but this is easily solved by placing all relevant tables 
 in the appendix and adhereing to the common sense guideline that one should never present in a table what 
 could be communicated in a graph. This post and the recommendations herein are broadly applicable in both 
 experimental and observational contexts. The problem remains prevelant in both top tier journals and those 
 with less prestige.
 
-[^5]: In many ways this recommendation echoes that made by @Huenermund2020
-
-::: a
 Of course, encouraging researchers to improve their own practices is only half the battle because bad habits 
 and logical fallacies are learned behaviors oweing to the reality that graduate-level statistics in the 
 social sciences is often taught entirely independent of any meaningful causal foundation. Students are 

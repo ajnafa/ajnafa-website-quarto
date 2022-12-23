@@ -8,8 +8,8 @@ format:
     comments:
       giscus: 
         repo: ajnafa/ajnafa-website-quarto
-        category: Blog Comments
-        category-id: DIC_kwDOInjb3s4CTFM-
+        category: "Blog Comments"
+        category-id: "DIC_kwDOInjb3s4CTFOA"
         mapping: pathname
         reactions-enabled: true
         loading: lazy
