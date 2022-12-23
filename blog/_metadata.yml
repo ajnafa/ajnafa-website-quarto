@@ -9,9 +9,9 @@ format:
       giscus: 
         repo: "ajnafa/ajnafa-website-quarto"
         repo-id: "R_kgDOInjb3g"
-        theme: preferred_color_scheme
-        category: "Blog Comments"
-        category-id: "DIC_kwDOInjb3s4CTFOA"
+       # theme: preferred_color_scheme
+       # category: "Blog Comments"
+       # category-id: "DIC_kwDOInjb3s4CTFOA"
     citation: true
 
 # Default for table of contents
@@ -33,4 +33,4 @@ crossref:
   eq-prefix: ""
 
 execute:
-  freeze: true
+  freeze: auto
