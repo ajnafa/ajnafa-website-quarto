@@ -33,4 +33,4 @@ crossref:
   eq-prefix: ""
 
 execute:
-  freeze: auto
+  freeze: true
