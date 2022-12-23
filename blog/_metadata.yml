@@ -9,12 +9,8 @@ format:
       giscus: 
         repo: ajnafa/ajnafa-website-quarto
         repo-id: "R_kgDOInjb3g"
-        category: "Announcements"
+        category: Announcements
         category-id: "DIC_kwDOInjb3s4CTFM-"
-        mapping: pathname
-        reactions-enabled: true
-        input-position: "top"
-        theme: "dark"
     quarto-template-params:
       banner-header-class: "blog-post"
 
