@@ -22,6 +22,10 @@ website:
     giscus: 
       repo: ajnafa/ajnafa-website-quarto
       category: Comments
+      repo-id: "R_kgDOInjb3g"
+      category-id: "DIC_kwDOInjb3s4CTFOA"
+      mapping: pathname
+      reactions-enabled: true
       language: en
 
   # Social Media Information
