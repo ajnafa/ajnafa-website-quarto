@@ -1,19 +1,16 @@
 # Date format
 date-format: long
 
-# Add blog-post class to the banner header area
-format: 
-  html:
-    code-tools: true
-    comments:
-      giscus: 
-        repo: "ajnafa/ajnafa-website-quarto"
-        repo-id: "R_kgDOInjb3g"
-        theme: preferred_color_scheme
-        category: "Blog Comments"
-        category-id: "DIC_kwDOInjb3s4CTFOA"
-        mapping: title
-    citation: true
+
+comments:
+  giscus: 
+    repo: "ajnafa/ajnafa-website-quarto"
+    repo-id: "R_kgDOInjb3g"
+    theme: preferred_color_scheme
+    category: "Blog Comments"
+    category-id: "DIC_kwDOInjb3s4CTFOA"
+    mapping: title
+
 
 # Default for table of contents
 toc: true
@@ -32,6 +29,9 @@ crossref:
   tbl-prefix: ""
   fig-prefix: ""
   eq-prefix: ""
+
+citation: true
+code-tools: true
 
 execute:
   freeze: auto
