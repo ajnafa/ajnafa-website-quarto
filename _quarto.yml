@@ -21,9 +21,7 @@ website:
   comments:
     giscus: 
       repo: ajnafa/ajnafa-website-quarto
-      repo-id: R_kgDOInjb3g
       category: Blog Comments
-      category-id: DIC_kwDOInjb3s4CTFOA
       mapping: url
       language: en
 
