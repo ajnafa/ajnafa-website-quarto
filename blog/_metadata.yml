@@ -6,9 +6,10 @@ comments:
     repo: ajnafa/ajnafa-website-quarto
     repo-id: R_kgDOInjb3g
     theme: preferred_color_scheme
-    category: "Blog Comments"
-    category-id: DIC_kwDOInjb3s4CTFOA
-    mapping: title
+    category: Announcements
+    category-id: DIC_kwDOInjb3s4CTFM-
+    mapping: url
+    language: en
 
 # Default for table of contents
 toc: true

@@ -21,7 +21,6 @@ website:
   open-graph:
     title: "A. Jordan Nafa"
     description: "A. Jordan Nafa's Personal Website and Bayesian Data Science Blog"
-    locale: en_US
     image: "assets/media/twitter-card-large-bw.png"
 
   twitter-card: 
