@@ -22,10 +22,9 @@ website:
     giscus: 
       repo: ajnafa/ajnafa-website-quarto
       repo-id: R_kgDOInjb3g
-      theme: preferred_color_scheme
       category: Blog Comments
       category-id: DIC_kwDOInjb3s4CTFOA
-      mapping: pathname
+      mapping: url
       language: en
 
   # Social Media Information
