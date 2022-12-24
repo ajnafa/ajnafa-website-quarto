@@ -2,7 +2,6 @@
 title: "A. Jordan Nafa"
 image: assets/media/avatar.jpg
 linkstyle: normal
-comments: false
 about:
   template: jolla
   image-width: 18em
@@ -104,3 +103,22 @@ Aug 2014 - Aug 2018
 Denton, TX  
 :::
 :::
+
+
+<body>
+<script src="https://giscus.app/client.js"
+        data-repo="ajnafa/ajnafa-website-quarto"
+        data-repo-id="R_kgDOInjb3g"
+        data-category="Comments"
+        data-category-id="DIC_kwDOInjb3s4CTFOA"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+</body>

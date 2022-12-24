@@ -18,14 +18,14 @@ website:
   repo-url: https://github.com/ajnafa/ajnafa-website-quarto
   repo-actions: [edit, issue]
 
-  comments:
-    giscus: 
-      repo: ajnafa/ajnafa-website-quarto
-      category: Comments
-      repo-id: "R_kgDOInjb3g"
-      category-id: "DIC_kwDOInjb3s4CTFOA"
-      mapping: pathname
-      reactions-enabled: true
+  #comments:
+  #  giscus: 
+  #    repo: ajnafa/ajnafa-website-quarto
+  #    category: Comments
+  #    repo-id: "R_kgDOInjb3g"
+  #    category-id: "DIC_kwDOInjb3s4CTFOA"
+  #    mapping: pathname
+  #    reactions-enabled: true
 
   # Social Media Information
   open-graph:
