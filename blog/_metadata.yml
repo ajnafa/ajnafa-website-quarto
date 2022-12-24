@@ -1,5 +1,6 @@
 # Date format
 date-format: long
+
 comments:
   giscus: 
     repo: ajnafa/ajnafa-website-quarto
@@ -8,20 +9,6 @@ comments:
     category: "Blog Comments"
     category-id: DIC_kwDOInjb3s4CTFOA
     mapping: title
-
-<<<<<<< HEAD
-=======
-
-comments:
-  giscus: 
-    repo: "ajnafa/ajnafa-website-quarto"
-    repo-id: "R_kgDOInjb3g"
-    theme: preferred_color_scheme
-    category: "Blog Comments"
-    category-id: "DIC_kwDOInjb3s4CTFOA"
-    mapping: title
-
->>>>>>> da50c830f95e251a48b2c4e6fee2ed383dc983b6
 
 # Default for table of contents
 toc: true
