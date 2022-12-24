@@ -21,7 +21,7 @@ website:
   comments:
     giscus: 
       repo: ajnafa/ajnafa-website-quarto
-      category: Blog Comments
+      category: Comments
       mapping: url
       language: en
 
