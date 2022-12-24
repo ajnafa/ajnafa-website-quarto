@@ -7,14 +7,6 @@ resources:
   - "data/sim_draws_summ.rds"
 categories: [R, Bayesian Statistics, Causal Inference, Regression, Stan, Simulation]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
-comments:
-  giscus: 
-    repo: ajnafa/ajnafa-website-quarto
-    category: Comments
-    repo-id: "R_kgDOInjb3g"
-    category-id: "DIC_kwDOInjb3s4CTFOA"
-    mapping: pathname
-    reactions-enabled: true
 ---
 
 ```{r setup, include=FALSE}
