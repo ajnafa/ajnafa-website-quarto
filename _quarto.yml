@@ -22,7 +22,6 @@ website:
     giscus: 
       repo: ajnafa/ajnafa-website-quarto
       category: Comments
-      mapping: url
       language: en
 
   # Social Media Information
