@@ -1,6 +1,6 @@
 ---
 title: "A. Jordan Nafa"
-image: ../assets/media/avatar.jpg
+image: assets/media/avatar.jpg
 linkstyle: normal
 comments: false
 about:

@@ -1,21 +1,12 @@
 ---
 title: "These Aren't the Effects You're Looking For"
+pagetitle: "These Aren't the Effects You're Looking For"
 date: 2022-12-22
 description: "This blog post provides an overview of the logic of statistical control, the fallacy of mutual adjustment, and a simulation-based illustration of correct and incorrect approaches to the interpretation of multivariable regression models in the social sciences."
 resources: 
   - "data/sim_draws_summ.rds"
-categories:
-  - R
-  - Bayesian Statistics
-  - Causal Inference
-  - Regression
-  - Stan
-  - Simulation
+categories: [R, Bayesian Statistics, Causal Inference, Regression, Stan, Simulation]
 ---
-
-$$
-\newcommand{\indep}{\perp \!\!\! \perp}
-$$
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -1181,5 +1172,6 @@ such an approach should be taken in their own work and they then go on to teach 
 those same poor practices. Before long, this results in entire fields in which presumed knowledge rests
 upon castles of sand and hinders scientific progress.
 ::: 
+
 
 # References

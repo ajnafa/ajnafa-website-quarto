@@ -14,8 +14,19 @@ website:
   favicon: "assets/media/icon.svg"
   description: "A. Jordan Nafa's Personal Website and Bayesian Data Science Blog"
   site-url: https://www.ajordannafa.com
+  site-path: /
   repo-url: https://github.com/ajnafa/ajnafa-website-quarto
   repo-actions: [edit, issue]
+
+  comments:
+    giscus: 
+      repo: ajnafa/ajnafa-website-quarto
+      repo-id: R_kgDOInjb3g
+      theme: preferred_color_scheme
+      category: Blog Comments
+      category-id: DIC_kwDOInjb3s4CTFOA
+      mapping: pathname
+      language: en
 
   # Social Media Information
   open-graph:
@@ -37,7 +48,7 @@ website:
     logo-href: index.qmd
     search: true
     left:
-      - href: "about/index.qmd"
+      - href: "about.qmd"
         text: About
       - href: "blog/index.qmd"
         text: Blog
@@ -45,7 +56,7 @@ website:
         text: Resume/CV
       #- href: "consulting/index.qmd"
       #  text: Consulting
-      - href: "projects/index.qmd"
+      - href: "projects.qmd"
         text: Projects
     right:
       - icon: github
@@ -88,7 +99,9 @@ format:
     code-block-bg: "#272822"
     code-fold: show
     include-in-header: "assets/js/math-colors.js"
+    embed-resources: true
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"
 csl: "assets/bib/apsa.csl"
+
