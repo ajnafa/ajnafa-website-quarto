@@ -7,6 +7,7 @@ resources:
   - "data/sim_draws_summ.rds"
 categories: [R, Bayesian Statistics, Causal Inference, Regression, Stan, Simulation]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
+comments: false
 ---
 
 ```{r setup, include=FALSE}
