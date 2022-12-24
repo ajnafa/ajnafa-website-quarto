@@ -26,7 +26,6 @@ website:
       category-id: "DIC_kwDOInjb3s4CTFOA"
       mapping: pathname
       reactions-enabled: true
-      language: en
 
   # Social Media Information
   open-graph:
