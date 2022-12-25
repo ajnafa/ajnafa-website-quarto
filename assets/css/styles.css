@@ -72,6 +72,14 @@ body p {
   padding-top: 0;
 }
 
+@media (max-width: 1000px) {
+
+  p {
+    text-align: right;
+   }
+
+}
+
 pre.sourceCode {
   font-size: 10pt;
 }
