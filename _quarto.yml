@@ -95,7 +95,7 @@ format:
     code-block-bg: "#272822"
     highlight-style: monokai
     code-fold: show
-    html-math-method: katex
+    html-math-method: mathjax
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"
