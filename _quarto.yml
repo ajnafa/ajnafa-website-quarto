@@ -51,7 +51,7 @@ website:
         text: About
       - href: "blog/index.qmd"
         text: Blog
-      - href: "assets/media/Nafa, A. Jordan_Resume_December-2022.pdf"
+      - href: "cv/index.qmd"
         text: Resume/CV
       #- href: "consulting/index.qmd"
       #  text: Consulting
@@ -91,14 +91,11 @@ format:
     theme: "assets/css/lux-modified.scss"
     css: "assets/css/styles.css"
     toc: false
-    highlight-style: monokai
-    self-contained: true
     citations-hover: true
     code-link: true
     code-block-bg: "#272822"
+    highlight-style: monokai
     code-fold: show
-    include-in-header: "assets/js/math-colors.js"
-    embed-resources: true
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"

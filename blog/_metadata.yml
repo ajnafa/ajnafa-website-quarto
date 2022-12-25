@@ -11,15 +11,17 @@ author:
     url: https://www.ajordannafa.com/
     orcid: 0000-0001-5574-3950
 
+
+citation: true
+code-tools: true
+
+# Table and Figure settings
 tbl-cap-location: top
 fig-cap-location: top
 crossref: 
   tbl-prefix: ""
   fig-prefix: ""
   eq-prefix: ""
-
-citation: true
-code-tools: true
 
 execute:
   freeze: auto

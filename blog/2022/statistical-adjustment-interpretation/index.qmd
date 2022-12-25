@@ -7,8 +7,7 @@ resources:
   - "data/sim_draws_summ.rds"
 categories: [R, Bayesian Statistics, Causal Inference, Regression, Stan, Simulation]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
-comments: false
-image: figs/preview-fig.svg
+image: figs/preview-fig.png
 ---
 
 ```{r setup, include=FALSE}
@@ -1015,7 +1014,7 @@ meaningful interpretation under either scenario.
 # Load the data
 sim_draws_combined <- read_rds("data/sim_draws_summ.rds")
 
-# Make a table of the type 1 error probabilities
+# Make a table of the error probabilities
 sim_draws_coefs <- sim_draws_combined %>% 
   filter(str_detect(variable, "beta")) %>% 
   mutate(error = between(truth, q5, q95)) %>% 
@@ -1043,7 +1042,7 @@ kbl(
 ::: a
 Just how wrong are these parameter estimates likely to be? Here I move beyond 
 simple error probabilities and look more closely at errors of *magnitude*.[^3] Conditional
-on having already committed a Type I error and concluding that our credible interval contains the true
+on having already reach the incorrect conclusion that our credible interval contains the true
 parameter value when it in fact does not,[^4] figure @fig-type-m-error shows the average root mean 
 square error for each parameter in which the 90% credible interval fails to capture the true value.
 We see that on average the magnitude of bias in covariates can be quite large and in the case both 

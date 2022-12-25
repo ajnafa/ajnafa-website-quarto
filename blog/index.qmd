@@ -5,6 +5,8 @@ listing:
   contents: 
     - "2022/**/index.qmd"
     - "2023/**/index.qmd"
+  categories: true
+page-layout: full
 date-format: long
 code-tools: false
 comments: false
