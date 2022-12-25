@@ -1,6 +1,7 @@
 ---
-title: "These Aren't the Effects You're Looking For"
-pagetitle: "These Aren't the Effects You're Looking For"
+title: "These Are Not the Effects You Are Looking For"
+subtitle: "The Fallacy of Mutual Adjustment and How to Avoid It"
+pagetitle: "These Are Not the Effects You Are Looking For"
 date: 2022-12-23
 description: "This blog post provides an overview of the logic of statistical control, the fallacy of mutual adjustment, and a simulation-based illustration of correct and incorrect approaches to the interpretation of multivariable regression models in the social sciences."
 resources: 
@@ -237,7 +238,7 @@ and the observed outcome we can express the causal effect of a binary
 treatment as
 
 $$
-Y_{i}(X_{i} = 1, Z_{i}) - Y_{i}(X_{i} = 0, Z_{i})
+\mathrm{Y}_{i}(\mathrm{X}_{i} = 1, \mathrm{Z}_{i}) - \mathrm{Y}_{i}(\mathrm{X}_{i} = 0, \mathrm{Z}_{i})
 $$ {#eq-causal-effect}
 
 As equation @eq-causal-effect makes clear, a causal effect is the difference
@@ -688,6 +689,7 @@ framework and taking a Bayesian approach may in fact be constraining how severe 
 parameter estimates can be.[^2] Our model here takes the following form
 ::: 
 
+
 [^2]: One could also simply specify a frequentist prior here by assuming that all parameter values between $-\infty$ and $\infty$ are equally likely.
 
 $$
@@ -702,8 +704,10 @@ y_{i} &\sim \mathcal{N}(\mu, \sigma)\\
 $${#eq-model-formula}
 
 where priors in equation @eq-model-formula are specified based on the scaling approach outlined in @Gelman2021 
-and thus automatically adjusted to be weakly informative for each of the simulated datasets. We can specify the model 
+and thus automatically adjusted to be weakly informative for each of the simulated datasets.[^3] We can specify the model 
 in Stan as follows
+
+[^3]: Although this makes the prior data dependent which may in some cases be undesirable, it works quite well for this illustration.
 
 ```stan
 data {
@@ -1041,9 +1045,9 @@ kbl(
 
 ::: a
 Just how wrong are these parameter estimates likely to be? Here I move beyond 
-simple error probabilities and look more closely at errors of *magnitude*.[^3] Conditional
+simple error probabilities and look more closely at errors of *magnitude*.[^4] Conditional
 on having already reach the incorrect conclusion that our credible interval contains the true
-parameter value when it in fact does not,[^4] figure @fig-type-m-error shows the average root mean 
+parameter value when it in fact does not,[^5] figure @fig-type-m-error shows the average root mean 
 square error for each parameter in which the 90% credible interval fails to capture the true value.
 We see that on average the magnitude of bias in covariates can be quite large and in the case both 
 $Z$ and $X$ are jointly identified, the magnitude of bias in the parameters $L$ and $W$ is on average 
@@ -1051,9 +1055,9 @@ $Z$ and $X$ are jointly identified, the magnitude of bias in the parameters $L$ 
 underscoring the reality that "big data" is not a substitute for experimental design or causal reasoning.
 :::
 
-[^3]: If it isn't obvious at this point, I am leaning very heavily on the Bernstein-von Mises theorem here.
+[^4]: If it isn't obvious at this point, I am leaning very heavily on the Bernstein-von Mises theorem here.
 
-[^4]: Or in the frequentist case, whatever weird and tortured interpretation of a confidence interval you prefer because Neyman was a fundamentalist who refused to consider uncertainty in terms of beliefs.
+[^5]: Or in the frequentist case, whatever weird and tortured interpretation of a confidence interval you prefer because Neyman was a fundamentalist who refused to consider uncertainty in terms of beliefs.
 
 ```{r type-m-error, echo = FALSE, dev='svg'}
 #| label: fig-type-m-error
@@ -1153,9 +1157,9 @@ The overarching and unnecessarily long-winded point of this post is that applied
 focus on the feature of the world they care about. If one is interested in a relationship between the
 implementation of gender quotas and women's representation in government, for example, one should simply
 focus on estimating the impact of quota adoption on the representation of women in government rather than
-wasting words opining about political corruption, electoral systems, or some other nuisance parameter.[^5] 
+wasting words opining about political corruption, electoral systems, or some other nuisance parameter.[^6] 
 
-[^5]: In many ways this recommendation echoes that made by @Huenermund2020
+[^6]: In many ways this recommendation echoes that made by @Huenermund2020
 
 ::: a
 One might attempt to object on the grounds incompetent reviewers often demand otherwise principled 

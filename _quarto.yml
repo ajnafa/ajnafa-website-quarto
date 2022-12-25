@@ -89,15 +89,14 @@ website:
 format:
   html:
     theme: "assets/css/lux-modified.scss"
-    css: "assets/css/styles.css"
     toc: false
     citations-hover: true
     code-link: true
     code-block-bg: "#272822"
     highlight-style: monokai
     code-fold: show
+    html-math-method: katex
 
 # Bibliography settings
 bibliography: "assets/bib/references.bib"
 csl: "assets/bib/apsa.csl"
-
