@@ -456,3 +456,8 @@ div.quarto-about-jolla main {
 div.listing-date {
   text-align: left;
 }
+
+p code:not(.sourceCode), li code:not(.sourceCode) {
+  background-color: $white;
+  padding: .2em;
+}
