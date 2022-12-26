@@ -25,19 +25,6 @@ knitr::opts_chunk$set(
       x
   }
 )
-
-## Load the necessary libraries
-pacman::p_load(
-  "tidyverse",
-  "arrow",
-  "data.table",
-  "ggdag",
-  "dagitty",
-  "patchwork",
-  "posterior",
-  "kableExtra",
-  install = FALSE
-)
 ```
 
 ::: callout-important
