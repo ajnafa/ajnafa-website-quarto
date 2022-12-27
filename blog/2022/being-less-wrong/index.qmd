@@ -7,6 +7,8 @@ description: "This post provides an introduction to Bayesian Model Averaging and
 categories: [R, Bayesian Statistics, Causal Inference, Marginal Effects, Stan, Logit, Model Averaging]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
 image: figs/preview-fig.png
+toc-location: left
+page-layout: full
 ---
 
 ```{r setup, include=FALSE}
@@ -49,9 +51,9 @@ regression models.
 ::: a 
 I introduce what I call a Bayesian Model Averaged Marginal Effect (BMAME) in the context of logistic regression 
 models in political science and illustrate how to obtain BMAMEs in a straightforward manner using the 
-`{marginaleffects}` R package, which thanks to Vincent Arel-Bundock's assistance supports model averaged or
+`{marginaleffects}` R package [@ArelBundock2022a], which thanks to Vincent Arel-Bundock's assistance supports model averaged or
 stacked average marginal effects for any model fit with the Stan interface `{brms}` 
-[@ArelBundock2022a; @Burkner2017; @Burkner2018]. I also provide a more general demonstration in Stan that makes
+[@Burkner2017; @Burkner2018]. I also provide a more general demonstration in Stan that makes
 the method easily applicable in Python and high dimensional settings. Although I focus here on models that include 
 only population-level effects, recent feature additions to `{marginaleffects}` now make it possible to obtain
 BMAMEs from more complex hierarchical models and I will cover such applications in a subsequent post.
@@ -79,13 +81,9 @@ no other reason than because a model-wise mixture distribution for our paramter 
 certainly more informative than a point estimate from a single model specification. Indeed, BMA provides
 one of the few natural and intuitive ways of resolving some of the issues outlined in the preceding 
 paragraph, particularly as it pertains to the evaluation of non-nested theoretical models, while also
-exhibiting a lower false positive rate than alternative approaches [@Pluemper2018]. 
-
-BMA is particularly useful in the context of effect estimates from models that employ non-linear link 
-functions such as logit which impede the ability to compare coefficient estimates across different 
-model specifications in any meaningful way [@Mood2009; @Daniel2020], a point I will return to later in
-this post. This section provides a brief explanation of BMA and its relation to what I term model 
-averaged marginal effects before proceeding to a discussion of how the procedure is implemented.
+exhibiting a lower false positive rate than alternative approaches [@Pluemper2018]. This section provides 
+a brief explanation of BMA and its relation to what I term model averaged marginal effects before 
+proceeding to a discussion of how the procedure is implemented.
 ::: 
 
 ## Bayesian Model Comparison and Model Averaging
@@ -143,7 +141,7 @@ predictive distribution for some parameter such as a regression coefficient for 
 below, an average marginal effect or probability contrast for models that employ a non-linear link function. 
 ::: 
 
-## Model Averaged Marginal Effects
+## Bayesian Model Averaged Marginal Effects
 
 Average marginal effects are ubquitous in the social sciences though, as 
 [Andrew Heiss nicely illustrates](https://www.andrewheiss.com/blog/2022/05/20/marginalia/), the term average 
@@ -171,14 +169,12 @@ complex than a simple linear regression can only be meaningfully interpreted in 
 it generates [@Long2018], which in the case of logistic regression simply means applying the inverse 
 logistic function to obtain predicted probabilities which we can then use to estimate contrasts or average 
 marginal effects [@Norton2019]. Letting $\mathrm{Y}$ represent a binary outcome, $\mathrm{X}$ a continuous 
-exposure or treatment of interest, and $\mathrm{Z}$ a matrix of observed confounders we can express the 
+exposure or treatment of interest, and $\mathrm{Z}$ a matrix of measured confounders, we can express the 
 average marginal effect as
 :::
 
 $$
-\begin{align}
-\mathrm{AME}\Delta_{j} &= \int \frac{\mathbb{E}[\Pr(\mathrm{Y}_{ij} = 1 | \mathrm{X}_{ij} = \mathrm{x}_{ij} + h, \mathrm{Z}_{ij}) ~-~ \Pr(\mathrm{Y}_{ij} = 1 | \mathrm{X}_{ij} = \mathrm{x}_{ij}, \mathrm{Z}_{ij})]d\mathrm{Z}}{h} \\
-\end{align}
+\mathrm{AME}\Delta_{j} = \int \frac{\mathbb{E}[\mathrm{Y}_{ij} ~ | ~ \mathrm{X}_{ij} = \mathrm{x}_{ij} + h, \mathrm{Z}_{ij}] ~-~ \mathbb{E}[\mathrm{Y}_{ij} ~ | ~ \mathrm{X}_{ij} = \mathrm{x}_{ij}, \mathrm{Z}_{ij}]d\mathrm{Z}}{h} \\
 $$ {#eq-logit-continuous-ame} 
 
 which provided a sufficiently small value of $h$, yields a reasonable approximation of the partial derivative 
@@ -192,9 +188,7 @@ Similarly, for a binary treatment of interest we apply the Bayesian g-formula to
 effect of $\mathrm{X}$ on the probability of $\mathrm{Y}$ as shown in equation @eq-logit-binary-ame.
 :::
 $$
-\begin{align}
-\mathrm{AME}\Delta_{j} &= \int \mathbb{E}[\Pr(\mathrm{Y}_{ij} = 1 ~ | ~ \mathrm{X}_{ij} = 1, \mathrm{Z}_{ij}) ~-~ \Pr(\mathrm{Y}_{ij} = 1 ~ | ~ \mathrm{X}_{ij} = 0, \mathrm{Z}_{ij})]d\mathrm{Z} \\
-\end{align}
+\mathrm{AME}\Delta_{j} = \int \mathbb{E}[\mathrm{Y}_{ij} ~ | ~ \mathrm{X}_{ij} = 1, \mathrm{Z}_{ij}] ~-~ \mathbb{E}[\mathrm{Y}_{ij} ~ | ~ \mathrm{X}_{ij} = 0, \mathrm{Z}_{ij}]d\mathrm{Z} \\
 $$ {#eq-logit-binary-ame}
 
 Equations @eq-logit-continuous-ame and @eq-logit-binary-ame make clear that we are averaging over the confounder 
@@ -206,30 +200,109 @@ two quantities can produce very different results under fairly general condition
 the same question**.
 
 ::: a
-From here it is straightforward to obtain a model averaged marginal effect estimate for a binary outcome model
-such as logit. Given marginal predictions for each model $k$ in the set $m$, we can apply equation @eq-logit-bmame
+From here it is straightforward to obtain a model averaged marginal effect estimate for a discrete outcome model
+such as logit. Given marginal predictions for each model $k$ in the set $m$, we can apply equation @eq-logit-binary-bmame 
 to obtain the posterior distribution of average marginal effects for each model.
 :::
 
 $$
-\mathrm{BMAME}\Delta_{j} = \sum_{k=1}^{m} \Pr(\mathcal{M}_{k} | y)\cdot\mathrm{AME}\Delta_{k,j}
-$$ {#eq-logit-bmame} 
+\begin{align}
+\mathrm{BMAME}\Delta_{j} &= \sum_{k=1}^{m} \Pr(\mathcal{M}_{k} | y)\cdot\int \mathbb{E}[\mathrm{Y}_{ij}, \mathcal{M}_{k} | \mathrm{X}_{ij} = 1, \mathrm{Z}_{ij}] ~-~ \mathbb{E}[\mathrm{Y}_{ij}, \mathcal{M}_{k} | \mathrm{X}_{ij} = 0, \mathrm{Z}_{ij}]d\mathrm{Z} \\
+&= \sum_{k=1}^{m} \Pr(\mathcal{M}_{k} | y)\cdot\mathrm{AME}\Delta_{k,j}
+\end{align}
+$$ {#eq-logit-binary-bmame} 
 
 This yields a model-wise mixture distribution representing the weighted average of the marginal effects
-estimates and has much broad applicability to scenarios common in the social sciences and beyond.
+estimates and has broad applicability to scenarios common in the social sciences, industry, and any 
+other setting where a need arises to account for uncertainty in model specification.
 
-## BMA, Stacking, and the Open-$\mathcal{M}$ Problem
+## Limitations and Caveats
 
-While traditional marginal likelihood-based Bayesian modeling is a powerful and principled technique for 
-dealing with uncertainty in the process of model specification and selection, it is nevertheless imperfect 
-owing in part to the fact that its validity rests upon the closed $\mathcal{M}$ assumption implicit in 
-equation @eq-posterior-probability. In the open $\mathcal{M}$ setting where the true model is not among 
-those in the set of candidate models under consideration, as will generally be the case in any social 
-science application, traditional BMA is flawed and estimated effects based on posterior probability 
+While traditional marginal likelihood-based Bayesian modeling is a powerful and principled 
+technique for dealing with uncertainty in the process of model specification and selection, 
+it is not without limitations and caveats of its own, some of which bear emphasizing before 
+proceeding further.
+
+### Marginal Likelihood and Computational Uncertainty
+
+First, for all but the simplest of models attempting to derive the integral in equation 
+@eq-marginal-likelihood analytically proves to be computationally intractable and we must 
+instead rely on algorithmic approximations such as bridge sampling [@Gronau2017; @Gelman1998; @Wang2020].
+While the bridge sampling approximation tends to perform well compared to common alternatives,
+estimates of the marginal likelihood $p(y \,|\, \mathcal{M})$ obtained via bridge sampling may be 
+highly variable upon repeated runs of the algorithm [@Schad2022]. This problem tends to arise in more
+complex hierarchical models with multiple varying effects and, perhaps unsurprisingly, suggests
+that by relying on approximations we introduce an additional source of computational uncertainty 
+that may need to be accounted for.
+
+::: a
+For the purposes of BMAMEs, I have elsewhere proposed addressing this additional source of uncertainty 
+and incorporating it into the estimates by executing the bridge sampling algorithm $S$ times for each 
+model to obtain a distribution of possible values for the approximate log marginal likelihood. Given a 
+vector of estimates for $p(y ~|~ \mathcal{M})$ of length $s$ for each model $k \in \{1,2,\dots, m\}$, 
+we can apply equation @eq-posterior-probability to obtain an $s \times m$ matrix of posterior model 
+probabilities. It is then straightforward to extend equation @eq-logit-binary-bmame average over the 
+distribution of posterior probability weights rather than relying on single estimate or point estimate 
+as shown in equation @eq-logit-bmame-reps below.
+
+$$
+\begin{align}
+\mathrm{BMAME}\Delta_{j} &=\frac{1}{S}\sum_{s=1}^{S} \left[\sum_{k=1}^{m} \Pr(\mathcal{M}_{k, s} | y)\cdot\int \mathbb{E}[\mathrm{Y}_{ij}, \mathcal{M}_{k} | \mathrm{X}_{ij} = 1, \mathrm{Z}_{ij}] ~-~ \mathbb{E}[\mathrm{Y}_{ij}, \mathcal{M}_{k} | \mathrm{X}_{ij} = 0, \mathrm{Z}_{ij}]d\mathrm{Z}\right] \\
+&= \frac{1}{S}\sum_{s=1}^{S}\left[\sum_{k=1}^{m} \Pr(\mathcal{M}_{k, s} | y)\cdot\mathrm{AME}\Delta_{k,j}\right]
+\end{align}
+$$ {#eq-logit-bmame-reps} 
+
+Whether this approach is necessary or not depends largely on how variable the algorithm is on repeated runs
+and it may simply be adequate to instead take the median or mean of the marginal likelihood estimates for
+each model. Although it is beyond the scope of this post, one could also use exhaustive leave-future-out 
+cross-validation which is equivalent to the marginal likelihood given a logarithmic scoring rule 
+[@Fong2020; @Buerkner2020], though this approach tends to be extremely expensive in terms of computation.
+:::
+
+### Bayes Factors and Prior Sensitivity
+
+The second caveat with respect to obtaining BMAMEs stems from a common criticism of Bayes Factors. Although
+as the amount of available data $n \longrightarrow \infty$, the likelihood will tend to dominate the prior 
+in Bayesian estimation, this is not necessarily the case in terms of inference. Indeed, from equations 
+@eq-marginal-likelihood and @eq-posterior-probability one can quite clearly see the the posterior probability 
+$\Pr(\mathcal{M} ~| ~y)$ depends on the prior probability of the parameters, $\pi(\theta \,|\, \mathcal{M})$ 
+in equation @eq-marginal-likelihood, and the respective prior probability $\pi(\mathcal{M})$ of each model 
+in the set under consideration. Since our substantive conclusions may be sensitive to either of these prior 
+specifications, these assumptions should be checked to verify the results do not vary wildly under reasonable 
+alternatives. 
+
+::: a
+Perhaps more importantly, due to their dependence on Bayes Factors, posterior probability weights require at
+least moderatlely informative priors on each and every parameter in a model and it is by this point common 
+knowledge that specifying a flat or "uninformative" prior such as $\beta \sim \mathrm{Uniform(-\infty, \infty)}$ 
+or even an excessively vague one tends to bias Bayes Factors--and by extension values that depend on 
+them--violently in favor of the null model.[^3] This is a feature of applied Bayesian inference rather than a
+bug and **if you make stupid assumptions, you will end up with stupid results**. The solution to this problem 
+is to think carefully about the universe of possible effect sizes you might observe for a given parameter, 
+assign reasonable priors that constrain the parameter space, and verify that the results are robust to 
+alternative distributional assumptions.
+
+[^3]: There is no such thing as an "uninformative prior"; the concept itself is not mathematically defined.
+
+:::
+
+::: {.callout-caution collapse="true"}
+### Likeihoods and Priors
+
+The degree to which a prior can be considered informative is heavily dependent on the likelihood and can often 
+only be understood in that context [@Gelman2017].
+:::
+
+### Stacking, and the Open-$\mathcal{M}$ Problem
+
+Finally, traditional BMA is flawed in the sense that its validity rests upon the closed $\mathcal{M}$ 
+assumption implicit in equation @eq-posterior-probability. In the open $\mathcal{M}$ setting where the 
+true model is not among those in the set of candidate models under consideration, as will generally 
+be the case in any real world application, estimated effects based on posterior probability 
 weights are likely to be biased [@Hollenbach2020; @Yao2018]. This problem arises from the fact that 
-marginal-likelihood based posterior probability weights for each model $i \in \mathcal{M}$ correspond to 
-the posterior probability that a given model captures the true data generation process and in the social 
-sciences this is unlikely to ever be the case since, by definition, *all models are wrong*. 
+marginal-likelihood based posterior probability weights for each model $m \in \mathcal{M}$ correspond to 
+the probability a given model captures the true data generation process and in most settings this is unlikely 
+to ever be the case since, by definition, *all models are wrong*. 
 
 ::: a
 In the open $\mathcal{M}$ setting, traditional BMA will still assign each model some probability but since by 
@@ -241,7 +314,9 @@ under consideration [@Hinne2020], it is advisable to assess whether our substant
 potential violations of the closed $\mathcal{M}$ assumption. This once again underscores the fact that statistics is 
 not an mechanistic truth generating process and *there is no magic*. It also underscores the need to think in more 
 local terms--rather than asking *is this model true* we generally want to know *the probability $\mathrm{X}$ 
-belongs to the true data generation process*.
+belongs to the true data generation process*.[^4]
+
+[^4]: As @Pluemper2018 demonstrate, BMA performs quite well in terms of this latter objective.
 
 An alternative but still properly Bayesian approach aimed at addressing these potential flaws in traditional BMA 
 is cross-validation based stacking [@Yao2018]. In contrast to traditional BMA, stacking 
@@ -249,10 +324,10 @@ and pseudo-BMA weights are constructed based on the relative expectation of the 
 density [@Hollenbach2020; @Yao2018]. These approaches to estimating model weights do not rely upon the closed 
 $\mathcal{M}$ assumption, and thus provide a way of either avoiding it altogether or relaxing it as a robustness 
 check on the posterior probability weights, albeit while answering a fundamentally different question more appropriate 
-for an open $\mathcal{M}$ world.[^4]
+for an open $\mathcal{M}$ world. Since the overall approachg to calculating model averaged AMEs does not change
+and we are merely substituting the posterior probability weights in equation @eq-logit-binary-bmame with
+stacking or pseudo-BMA weights, I direct readers to @Yao2018 for a formal discussion of these approaches.
 ::: 
-
-[^4]: For a more formal discussion of stacking and pseudo-BMA weights, I direct readers to @Yao2018.
 
 # Implementation and Illustration
 
@@ -276,5 +351,6 @@ during wartime are *more likely* to form political parties and participate in po
 demonstration is not comprehensive and only illustrates one aspect of how BMAMEs might be applied in practice. 
 However, as far as `{marginaleffects}` functionality is concerned, the general workflow is identical regardless.
 :::
+
 
 # References
