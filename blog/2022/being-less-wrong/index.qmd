@@ -9,6 +9,7 @@ license: All content in this post is made available for public use under a Creat
 image: figs/preview-fig.png
 toc-location: left
 page-layout: full
+code-fold: true
 ---
 
 ```{r setup, include=FALSE}
@@ -27,6 +28,137 @@ knitr::opts_chunk$set(
       x
   }
 )
+
+# Load the necessary libraries
+pacman::p_load(
+  "tidyverse", # Suite of packages for data management 
+  "arrow", # Apache Arrow R Bindings
+  "data.table", # data.table data wrangling
+  "brms", # Bayesian regression models with Stan
+  "furrr", # Package for parallel computation
+  "cmdstanr", # cmdstanr Stan interface
+  "patchwork",
+  "ggdist",
+  install = FALSE
+)
+
+# Custom theme for data visualizations
+plot_theme <- function(title_size = NULL, 
+                       xaxis_size = NULL, 
+                       yaxis_size = NULL, 
+                       strip_size = NULL, 
+                       strip_face = NULL, 
+                       caption.hjust = 1, 
+                       caption.vjust = 0, 
+                       x_axis_face = NULL, 
+                       y_axis_face = NULL, 
+                       transparent = FALSE, 
+                       axis_text_size = NULL, 
+                       legend_text_size = NULL,
+                       subtitle_size = NULL,
+                       caption_size = NULL,
+                       base_size = 12,
+                       ...) {
+  .theme <- theme_minimal(base_size = base_size) + theme(
+    # Specify the default settings for the plot title
+    plot.title = element_text(
+      size = title_size,
+      face = "bold",
+      family = "serif"
+    ),
+    # Specify the default settings for caption text
+    plot.caption = element_text(
+      size = caption_size,
+      family = "serif",
+      hjust = caption.hjust,
+      vjust = caption.vjust
+    ),
+    # Specify the default settings for subtitle text
+    plot.subtitle = element_text(
+      size = subtitle_size,
+      family = "serif"
+    ),
+    # Specify the default settings specific to the x axis title
+    axis.title.y = element_text(
+      size = yaxis_size, 
+      face = y_axis_face, 
+      family = "serif",
+      margin = margin(r = 10, l = -10)
+    ),
+    # Specify the default settings specific to the y axis title
+    axis.title.x = element_text(
+      size = xaxis_size, 
+      face = x_axis_face, 
+      family = "serif",
+      margin = margin(t = 10, b = -10)
+    ),
+    # Specify the default settings for x axis text
+    axis.text.x = element_text(
+      size = axis_text_size,
+      family = "serif",
+      face = x_axis_face
+    ),
+    # Specify the default settings for y axis text
+    axis.text.y = element_text(
+      size = axis_text_size,
+      family = "serif",
+      face = y_axis_face
+    ),
+    # Specify the default settings for legend titles
+    legend.title = element_text(
+      size = legend_text_size,
+      face = "bold",
+      family = "serif"
+    ),
+    # Specify the default settings for legend text
+    legend.text = element_text(
+      size = legend_text_size,
+      family = "serif"
+    ),
+    # Set the strip background fill to blank
+    strip.background = element_blank(),
+    # Adjust the strip text size settings
+    strip.text = element_text(
+      family = "serif", 
+      size = strip_size,
+      face = strip_face
+    ),
+    # Additional Settings Passed to theme()
+    ...
+  )
+  # Plot Transparency
+  if (transparent == TRUE) {
+    .theme <- .theme + theme(
+      panel.background = element_rect(fill = "transparent", colour = NA),
+      plot.background = element_rect(fill = "transparent", colour = NA),
+      legend.background = element_rect(fill = "transparent", colour = NA),
+      legend.key = element_rect(fill = "transparent", colour = NA)
+    )
+  }
+  return(.theme)
+}
+
+
+## Set the base theme settings for ggplot2
+theme_set(plot_theme(
+    xaxis_size = 24,
+    yaxis_size = 24,
+    title_size = 24,
+    caption_size = 24,
+    axis_text_size = 24,
+    strip_face = "bold",
+    y_axis_face = "bold",
+    x_axis_face = "bold",
+    plot.margin = margin(2, 0, 4, 5, "mm"),
+    plot.caption.position = "plot",
+    plot.title.position = "plot",
+    strip_size = 24,
+    legend_text_size = 24,
+    legend.position = "top",
+    caption.hjust = 0, 
+    caption.vjust = -1,
+    transparent = TRUE
+  ))
 ```
 
 ::: callout-important
@@ -329,6 +461,350 @@ and we are merely substituting the posterior probability weights in equation @eq
 stacking or pseudo-BMA weights, I direct readers to @Yao2018 for a formal discussion of these approaches.
 ::: 
 
+# Female Combatants and Post-Conflict Rebel Parties
+
+To illustrate the utility of BMAMEs in political science, I draw on an example adapted from the second chapter of
+my dissertation in which I examine how the active participation of women in rebel groups during wartime shapes 
+the political calculus of former combatant groups at war's end. In short, I expect rebel groups where women 
+participated in combat roles during wartime are *more likely* to form political parties and participate in 
+post-conflict elections. 
+
+## Data
+
+To identify the universe of post-conflict successor parties to former combatant groups I rely on the Civil 
+War Successor Party (CWSP) dataset which includes all civil wars in the UCDP Armed Conflicts Dataset (UCDP) 
+that terminated between 1970 and 2015 [@Daly2020]. Since the primary distinction between political parties 
+and other civil society organizations such as interest groups lies in the latter's participation in elections 
+and fielding candidates for political office and a party that does not compete in elections is no party at all, 
+I operationalize our dependent variable, *Rebel to Party Transition*, as a binary event which takes a value of 
+1 if a rebel group both forms a political party and directly participates in a country's first post-conflict 
+elections and 0 otherwise. The resulting sample consists of 112 observations for 108 unique rebel groups 
+across 56 countries, approximately 66% of which formed parties and participated in their country's first 
+post-conflict election.
+
+::: a
+Following @Wood2017, I define female combatants as members of a rebel group who are "armed and participate in 
+organized combat activities on behalf of a rebel organization" (38). I code instances of female participation 
+in rebel groups by mapping version 1.4 of the Women in Armed Rebellion Data (WARD) to the CWSP and construct 
+two versions of the main predictor of interest based on the best estimate for the presence of female combatants 
+in a given rebel group, one of which includes cases in which women served only as suicide bombers while 
+the other codes these groups as not having any women in combat positions. Each of these variables takes a value 
+of 1 if women participated in combat in a given rebel group and 0 otherwise.[^5] Among the rebel groups in our 
+analysis, female combatants have been active in some capacity in 52.67% of those who were involved in civil wars 
+that have terminated since 1970 and 50.89% featured women in non-suicide bombing roles.
+
+I also adjust for several additional factors that may otherwise confound the estimate of the effect of 
+female participation in combat on rebel successor party transitions. First, insurgent groups that attempt 
+to perform functions typically characteristic of the state during wartime may be more likely to transition 
+to political parties following the end of a conflict since, in doing so, they both develop organizational 
+capacity and if successful, demonstrate that they are capable of governing to their future base of support. 
+Moreover, as rebel groups build organizational capacity and accumulate institutional knowledge, their ability 
+to sustain a successful insurgency and recruit combatants grows as well. To adjust for rebel organizational 
+capacity I specify a Bayesian multidimensional item response model to construct a latent scale capturing the 
+degree to which rebel groups engaged in functions of the state during wartime based on twenty-six items from 
+Quasi-State Institutions dataset [@Albert2022].
+
+Second, I adjust for baseline characteristics of each rebel group that previous research suggests influences 
+both where women rebel and post-conflict party transitions. Drawing on data from @Braithwaite2019, I construct 
+a series of dichotomous indicator variables for whether a rebel group is affiliated with an existing political 
+party [@Manning2016], nationalist and left-wing or communist ideological origins [@Wood2017], and whether a 
+group has ties to a specific ethnic community since this may provide advantages in terms of mobilizing 
+combatants and voters along specific cleavages. I also construct two additional indictators to capture 
+whether the United Nations intervened in the conflict and whether a given rebel group was located in Africa.
+
+While it is, of course, impossible in the context of an observational setting such as this one to isolate
+every possible source of confounding, nor is it generally advisable to attempt to do so, I focus on 
+these baseline covariates since existing research provides a strong theoretical basis to suspect they 
+impact the relationship of interest.[^5] For the purposes of this illustration, I assume this set of covariates
+is sufficient to satisfy strong ignorability but such an assumption is likely unreasonable and 
+the particular analysis here is ultimately best taken as descriptive in nature.
+:::
+
+[^5]: Those familiar with the post-conflict rebel parties literature in political science are likely rolling their eyes at this sentence because in its present state it is not clear we know much of anything about causal relationships.
+
+```{r}
+# Read in the pre-processed data
+model_df <- read_parquet("data/model_data.gz.parquet")
+```
+
+
+## Model and Priors
+
+To estimate the effect of women's participation in combat on post-conflict rebel party transitions for 
+this example, I specify a simple logit model as shown in equation @eq-logit-model. The bernoulli 
+probability $\theta$ of a rebel group transitioning to a political party at war's end is modeled as a 
+function of the population-level intercept $\alpha$ and a vector of coefficients $\beta_{k}$ corresponding 
+to the matrix of inputs $X_{n}$.
+
+$$
+\begin{align}
+y_{i} &\sim \mathrm{Bernoulli}(\theta)\\
+\mathrm{logit}(\theta) &= \alpha + X_{n}\beta_{k}\\
+\text{with priors}\\
+\alpha &\sim \mathrm{Normal}(0, 1)\\
+\beta_{k} &\sim \mathrm{Normal}(0, 0.75)
+\end{align}
+$$ {#eq-logit-model}
+
+::: a
+Since we model $\theta$ via a logit link function, our priors on the intercept $\alpha$ and 
+coefficients $\beta_{k}$ should correspond to the expected change in the log odds of the response 
+for each predictor. Some may find the process of prior elicitation in logistic regression models 
+difficult since reasoning on the logit scale may seem unintuitive. As figure @fig-logit-scale
+illustrates, the the log odds of the response for models with that employ a logit link function 
+is effectively bounded between $\{-6, 6\}$ and values in excess of $|5|$ generally should not 
+occur unless your data exhibits near complete or quasi-complete separation.
+:::
+
+```{r fig-logit-scale, echo = TRUE, dev='svg'}
+#| label: fig-logit-scale
+#| fig-width: 14
+#| fig-height: 12
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Scale of the Logit Link"
+#| 
+## Simulate logit probabilities
+logit_scale <- tibble(
+  x = seq(-6.5, 6.5, 0.0001),
+  y = brms::inv_logit_scaled(x)
+)
+
+## Plot the logit scale
+ggplot(logit_scale, aes(x = x, y = y)) +
+  ## Add a line geom
+  geom_line(size = 3, color = "firebrick") +
+  ## Add labels
+  labs(x = "Log Odds", y = "Probability") +
+  ## Adjust the x axis scale breaks
+  scale_x_continuous(breaks = seq(-6, 6, 1)) +
+  ## Adjust the y axis scale breaks
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
+```
+::: a
+Framed in terms of effect sizes, a change of $\pm 3$ in the log odds of the response relative to the baseline spans half the logit scale in either direction. In the social sciences where data is largely random noise and effect sizes are typically small to moderate at best and while the road to hell is paved with *rules of thumb*, we can generally assume *a priori* that 1) any true effect of a given parameter $\beta$ in the population is likely modest in magnitude and 2) values closer zero are more likely than those further away. From these relatively straightforward assumptions, we can arrive at a prior for the coefficients that follows a normal distribution with mean 0 and scale $0.75$ as shown in equation @eq-logit-model. In practical terms, this assumes the universe possible effect sizes for each predictor is normally distributed in the range of approximately $-2.5$ and $2.5$ on the logit scale. 
+
+For the population-level intercept $\alpha$ I assign a slightly more diffuse normal prior mean 0 and scale 1 or $\alpha \sim \text{Normal}(0,~1)$ which reflects a slightly greater degree of uncertainty about the baseline probability but is still moderately informative and constrains the bulk of the prior density in the range of realistic values. It is important to note here that as shown in Stan model below, we are specifying a prior on the intercept for the centered inputs rather than on the original scale. To more explicitly communicate our prior assumptions, we can use the tools for visualizing uncertainty provided in the `{ggdist}` package as shown in figure 2 below [@Kay2022].
+:::
+
+```{r fig-logit-priors, echo = TRUE}
+#| label: fig-logit-priors
+#| fig-width: 20
+#| fig-height: 12
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Scale of the Logit Link"
+#| 
+## Simulate the prior probabilities
+logit_priors <- tibble(
+  alpha_prior = rnorm(10e5, 0, 1),
+  beta_prior = rnorm(10e5, 0, 0.75)
+) %>% 
+  ## Pivot the simulated data to long form
+  pivot_longer(everything())
+
+### Set parameter names for the facets----
+logit_prior_labels <- as_labeller(
+  x = c(
+    "beta_prior" = "bolditalic(beta[k] * phantom(.) * phantom() %~% phantom() * phantom(.) * Normal(0*list(,) * phantom(.) * 0.75))",
+    "alpha_prior" = "bolditalic(alpha[k] * phantom(.) * phantom() %~% phantom() * phantom(.) * Normal(0*list(,) * phantom(.) * 1))"
+  ), 
+  default = label_parsed
+)
+
+## Plot the prior distributions
+logit_prior_plots <- logit_priors %>% 
+  # Initiate the ggplot object
+  ggplot(aes(y = value, fill = name, shape = name)) +
+  # Facet by the prior distributions
+  facet_wrap(~ name, scales = "free", labeller = logit_prior_labels) +
+  # Add a half eye geom for the prior distributions
+  stat_halfeye(
+    aes(slab_alpha = stat(pdf)),
+    .width = c(.5, .8, .95),
+    fill_type = "segments",
+    trim = FALSE,
+    show.legend = FALSE
+  ) +
+  # Manually set the fill colors
+  scale_fill_manual(values = c("#208820", "#0060B0")) +
+  # Manually set the shapes
+  scale_shape_manual(values = c(22, 24)) +
+  # Adjust the breaks on the y axis
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 8)) +
+  # Flip the x and y axis
+  coord_flip() + 
+  # Add labels to the plot
+  labs(
+    x = "Prior Probability Density",
+    y = latex2exp::TeX(r'(Log $\Pr(\theta_{prior})$)', bold = T)
+  )
+
+## Print the combined plot, recommended that you use ggsave
+logit_prior_plots
+```
+
+::: a
+Since the model here is computationally quite efficient--on average, each model takes approximately 3 seconds to converge with 40,000 post-warmup draws--and in the interest of completeness, I search the full parameter space which consists of $k^{2}$ possible model specifications. Although it is possible to do this in this context, researchers will often instead need to place constrain the number of possible model configurations, generally by specifying an implicit prior model probability of 1 for certain parameters [@Montgomery2010; @Hinne2020]. This brings us to an unfortunate limitation of `{brms}` which requires recompiling the underlying Stan model for each fit, a process that ends up being extremely inefficient for a large number of model configurations since each model takes three times as long to compile as it does to fit. 
+
+To circumvent this issue, I implement the model directly in Stan as shown below which is designed to be directly compatible with brms and implments the bayesian g-formula for the average marginal effect of women's participation in combat on the probability of a rebel-to-party transition during the estimation process in the generated quanitites block. As I previously demonstrated in [this post](../statistical-adjustment-interpretation/index.qmd), it is then possible to compile the Stan model once and use the same program for each dataset using `{cmdstanr}` directly. Further computational gains can be obtained by using the `{furrr}` package to fit multiple models in parallel.
+:::
+
+::: panel-tabset
+
+### g-formula
+```stan
+// Bayesian Logit Model with Optional Bootstrapped AMEs via the Bayesian g-formula
+data {
+  int<lower=1> N; // N Observations
+  array[N] int Y; // Response Variable
+  int<lower=1> K; // Number of Population-Level Effects
+  matrix[N, K] X; // Population-level Design Matrix
+  int prior_only; // Should the likelihood be ignored?
+  int treat_pos; // Data for the bootstrapped AMEs
+}
+
+transformed data {
+
+  int Kc = K - 1;
+  matrix[N, Kc] Xc; // centered version of X without an intercept
+  vector[Kc] means_X; // column means of X before centering
+
+  for (i in 2 : K) {
+    means_X[i - 1] = mean(X[ : , i]);
+    Xc[ : , i - 1] = X[ : , i] - means_X[i - 1];
+  }
+  
+  // Bootstrap Probabilities
+  vector[N] boot_probs = rep_vector(1.0/N, N);
+  
+  // Matrices for the bootstrapped predictions
+  matrix[N, Kc] Xa; 
+  matrix[N, Kc] Xb;
+    
+  // Potential Outcome Y(X = 1, Z)
+  Xa = X[, 2:K];
+  Xa[, treat_pos - 1] = ones_vector(N);
+    
+  // Potential Outcome Y(X = 0, Z)
+  Xb = X[, 2:K];
+  Xb[, treat_pos - 1] = zeros_vector(N);
+}
+
+parameters {
+  vector[Kc] b; // Regression Coefficients
+  real Intercept; // Centered Intercept
+}
+
+transformed parameters {
+  real lprior = 0; // Prior contributions to the log posterior
+  lprior += normal_lpdf(b | 0, 0.75);
+  lprior += normal_lpdf(Intercept | 0, 1);
+}
+
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    target += bernoulli_logit_glm_lpmf(Y | X, Intercept, b);
+  }
+
+  // priors including constants
+  target += lprior;
+}
+
+generated quantities {
+
+  // Actual population-level intercept
+  real b_Intercept = Intercept - dot_product(means_X, b);
+
+  // Additionally sample draws from priors
+  array[Kc] real prior_b = normal_rng(0, 0.75);
+  real prior_Intercept = normal_rng(0, 1);
+  
+  // Row index to be sampled for bootstrap
+  int row_i;
+    
+  // Calculate Average Marginal Effect in the Bootstrapped sample
+  real AME = 0;
+  array[N] real Y_X1; // Potential Outcome Y(X = 1, Z)
+  array[N] real Y_X0; // Potential Outcome Y(X = 0, Z)
+    
+  for (n in 1:N) {
+    // Sample the Baseline Covariates
+    row_i = categorical_rng(boot_probs);
+      
+    // Sample Y(x) where x = 1 and x = 0
+    Y_X1[n] = bernoulli_logit_rng(b_Intercept + Xa[row_i] * b);
+    Y_X0[n] = bernoulli_logit_rng(b_Intercept + Xb[row_i] * b);
+      
+    // Add Contribution of the ith Observation to the Bootstrapped AME
+    AME = AME + (Y_X1[n] - Y_X0[n])/N;
+  }
+    
+  // Take the mean of the posterior expectations
+  real EYX1 = mean(Y_X1); // E[Y | X = 1, Z]
+  real EYX0 = mean(Y_X0); // E[Y | X = 0, Z]
+}
+```
+
+### Reference
+
+```stan
+// Bayesian Logit Model for Models without the Treatment Variable
+data {
+  int<lower=1> N; // total number of observations
+  array[N] int Y; // response variable
+  int<lower=1> K; // number of population-level effects
+  matrix[N, K] X; // population-level design matrix
+  int prior_only; // should the likelihood be ignored?
+}
+
+transformed data {
+
+  int Kc = K - 1;
+  matrix[N, Kc] Xc; // centered version of X without an intercept
+  vector[Kc] means_X; // column means of X before centering
+
+  for (i in 2 : K) {
+    means_X[i - 1] = mean(X[ : , i]);
+    Xc[ : , i - 1] = X[ : , i] - means_X[i - 1];
+  }
+}
+
+parameters {
+  vector[Kc] b; // Regression Coefficients
+  real Intercept; // Centered Intercept
+}
+
+transformed parameters {
+  real lprior = 0; // Prior contributions to the log posterior
+  lprior += normal_lpdf(b | 0, 0.75);
+  lprior += normal_lpdf(Intercept | 0, 1);
+}
+
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    target += bernoulli_logit_glm_lpmf(Y | X, Intercept, b);
+  }
+
+  // priors including constants
+  target += lprior;
+}
+
+generated quantities {
+
+  // Actual population-level intercept
+  real b_Intercept = Intercept - dot_product(means_X, b);
+
+  // Additionally sample draws from priors
+  array[Kc] real prior_b = normal_rng(0, 0.75);
+  real prior_Intercept = normal_rng(0, 1);
+}
+```
+:::
+
+
 # Implementation and Illustration
 
 Once we have decided how to obtain the model weights--whether using marginal likelihood or cross-validation based 
@@ -344,13 +820,17 @@ implementation, I also provide an illustration via R and Stan that should be fai
 other languages as necessary.
 
 ::: a
-To demonstrate this functionality, I draw on an example loosely adapted from part of my dissertation research in 
-which I examine how the active participation of women in rebel groups during wartime shapes the political calculus 
-of former combatant groups at war's end--in short, I expect rebel groups where women participated in combat roles 
-during wartime are *more likely* to form political parties and participate in post-conflict elections. Note this 
-demonstration is not comprehensive and only illustrates one aspect of how BMAMEs might be applied in practice. 
-However, as far as `{marginaleffects}` functionality is concerned, the general workflow is identical regardless.
+
 :::
 
+## Inclusion Bayes Factors
+
+In a Bayesian framework, model comparison is formalized by means of posterior model probabilities as shown in equation @eq-posterior-probability. Given $m$ possible candidate models and letting $i$ denote those containing the parameter of interest and $k$ those that do not, we can obtain an inclusion Bayes Factor that represents the relative posterior odds of the parameter of interest. To briefly illustrate this, imagine we have a set of six models $\mathcal{M}$ in which models $i \in \{1, 2, 3\}$ contain the parameter of interest while models $k \in \{4, 5, 6\}$ do not. The relative odds of a model containing a given parameter is simply the sum of the posterior model probabilities for each model $\mathcal{M_{i}}$ over $\mathcal{M_{k}}$ as shown in
+
+$$
+\mathrm{BF_{Inclusion}}~=~\frac{\sum_{i=1}\Pr(\mathcal{M}_{i} \, | \, y)}{\sum_{k=1}\Pr(\mathcal{M}_{k} \, | \, y)}
+$$ {#eq-inclusion-prob}
+
+Although my interest in this manuscript lies primarily in using the posterior model probabilities to obtain a model-wise mixture distribution of the substantive effect estimates as detailed in the following section and the inclusion Bayes Factors are simply presented for completeness, this briefly illustrates how one can formally test a hypothesis in a Bayesian framework and thus obtain a vague answer to a precise question as opposed to the common approach of providing precise answer to the wrong one [@Gross2014; @Kruschke2017].
 
 # References
