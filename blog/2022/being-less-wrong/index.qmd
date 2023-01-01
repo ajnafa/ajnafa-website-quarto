@@ -10,6 +10,9 @@ image: figs/fig-model-averaged-ame-margins.png
 toc-location: left
 page-layout: full
 code-fold: true
+
+execute:
+  freeze: true
 ---
 
 ```{r setup, include=FALSE}
