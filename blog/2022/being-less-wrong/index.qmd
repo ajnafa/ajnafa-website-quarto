@@ -1,17 +1,18 @@
 ---
-title: Being Less Wrong
-subtitle: An Introduction to Bayesian Hypothesis Testing and Model Averaged Marginal Effects
-pagetitle: Being Less Wrong
+title: An Introduction to Being Less Wrong
+subtitle: Bayesian Hypothesis Testing and Model Averaged Marginal Effects for the Social Sciences
+pagetitle: An Introduction to Being Less Wrong
 date: 2022-12-31
 description: "This post provides an introduction to Bayesian Model Averaging and Model Averaged Marginal Effects with Stan, `{brms}`, and `{marginaleffects}`"
-categories: [R, Bayesian Statistics, Causal Inference, Marginal Effects, Stan, Logit, Model Averaging]
+categories: [R, Bayesian Statistics, Statistics, Marginal Effects, Stan, Logit, Model Averaging]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
-image: figs/fig-model-averaged-ame-margins.png
+image: figs/fig-model-averaged-ame-margins.svg
 toc-location: left
 page-layout: full
 code-fold: true
 
-execute:
+# Execution options
+execute: 
   freeze: true
 ---
 
@@ -386,7 +387,7 @@ cross-validation which is equivalent to the marginal likelihood given a logarith
 [@Fong2020; @Buerkner2020], though this approach tends to be extremely expensive in terms of computation.
 :::
 
-[^2]: It is entirely possible thisd is wrong and doesn't actualy make sense so if someone has a better idea or suggestions for improvements I'd love to hear them.
+[^2]: It is entirely possible this is wrong and does not actualy make sense so if someone has a better idea or suggestions for improvements I would love to hear them.
 
 ### Bayes Factors and Prior Sensitivity
 
@@ -2346,7 +2347,7 @@ do for the coming year to work out a more efficient approach that allows for the
 of those illustrated in the preceding section.
 :::
 
-```{r fig-model-averaged-ame-margins, echo = TRUE}
+```{r fig-model-averaged-ame-margins, echo = TRUE, dev='svg'}
 #| label: fig-model-averaged-ame-margins
 #| fig-width: 14
 #| fig-height: 12
@@ -2421,9 +2422,8 @@ link functions in the comining weeks. In the meantime, however, remember that no
 ever good comes from mixing odds and ratios or exposing your relatives to unnecessary 
 risks and holding the random effects in a hierarchical model at their mean still gives
 you a conditional estimate that results in a weak connection between theory and data.
-
 Finally, if you catch any mistakes--and I can almost guarentee there are many in a 
-post of this length--either leave a comment or let me know some other way (i.e.., twitter).
+post of this length--either leave a comment or let me know some other way (i.e., twitter).
 :::
 
 # References
