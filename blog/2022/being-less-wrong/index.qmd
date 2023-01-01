@@ -6,7 +6,7 @@ date: 2022-12-31
 description: "This post provides an introduction to Bayesian Model Averaging and Model Averaged Marginal Effects with Stan, `{brms}`, and `{marginaleffects}`"
 categories: [R, Bayesian Statistics, Causal Inference, Marginal Effects, Stan, Logit, Model Averaging]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
-image: figs/preview-fig.png
+image: figs/fig-model-averaged-ame-margins.png
 toc-location: left
 page-layout: full
 code-fold: true
@@ -31,14 +31,15 @@ knitr::opts_chunk$set(
 
 # Load the necessary libraries
 pacman::p_load(
-  "tidyverse", # Suite of packages for data management 
-  "arrow", # Apache Arrow R Bindings
-  "data.table", # data.table data wrangling
-  "brms", # Bayesian regression models with Stan
-  "furrr", # Package for parallel computation
-  "cmdstanr", # cmdstanr Stan interface
+  "tidyverse", 
+  "arrow",
+  "data.table",
+  "brms", 
+  "furrr", 
+  "cmdstanr",
   "patchwork",
   "ggdist",
+  "marginaleffects",
   install = FALSE
 )
 
@@ -516,6 +517,20 @@ the particular analysis here may ultimately best be taken as descriptive in natu
 [^5]: Those familiar with the post-conflict rebel parties literature in political science are likely rolling their eyes at this sentence because in its present state it is not clear we know much of anything about causal relationships.
 
 ```{r}
+# Load the required libraries
+pacman::p_load(
+  "tidyverse", 
+  "arrow",
+  "data.table",
+  "brms", 
+  "furrr", 
+  "cmdstanr",
+  "patchwork",
+  "ggdist",
+  "marginaleffects",
+  install = FALSE
+)
+
 # Read in the pre-processed data
 model_df <- read_parquet("data/model_data.gz.parquet")
 ```
@@ -2328,7 +2343,7 @@ do for the coming year to work out a more efficient approach that allows for the
 of those illustrated in the preceding section.
 :::
 
-```{r fig-model-averaged-ame-margins, echo = TRUE, dev='svg'}
+```{r fig-model-averaged-ame-margins, echo = TRUE}
 #| label: fig-model-averaged-ame-margins
 #| fig-width: 14
 #| fig-height: 12
