@@ -1,8 +1,8 @@
 ---
-title: The Art of Being Less Wrong
+title: Being Less Wrong
 subtitle: An Introduction to Bayesian Hypothesis Testing and Model Averaged Marginal Effects
-pagetitle: The Art of Being Less Wrong
-date: 2022-05-24
+pagetitle: Being Less Wrong
+date: 2022-12-31
 description: "This post provides an introduction to Bayesian Model Averaging and Model Averaged Marginal Effects with Stan, `{brms}`, and `{marginaleffects}`"
 categories: [R, Bayesian Statistics, Causal Inference, Marginal Effects, Stan, Logit, Model Averaging]
 license: All content in this post is made available for public use under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License.
@@ -161,12 +161,6 @@ theme_set(plot_theme(
   ))
 ```
 
-::: callout-important
-### Work in Progress
-
-This is a draft post and under is currently under development. I have not proofread any of the contents herein
-
-:::
 
 # Introduction
 
@@ -310,9 +304,7 @@ $$ {#eq-logit-continuous-ame}
 
 which provided a sufficiently small value of $h$, yields a reasonable approximation of the partial derivative 
 and provides a posterior distribution for the average effect of an instantaneous change in $\mathrm{X}$ on the
-probability scale similar to what one obtains in linear regression.[^2]
-
-[^2]: In the case of an interval exposure, it may make more sense to estimate a marginal effect at each unique or representative value of $\mathrm{X}$ to better capture non-linearities.
+probability scale similar to what one obtains in linear regression.
 
 ::: a
 Similarly, for a binary treatment of interest we apply the Bayesian g-formula to obtain the average marginal 
@@ -374,7 +366,7 @@ vector of estimates for $p(y ~|~ \mathcal{M})$ of length $s$ for each model $k \
 we can apply equation @eq-posterior-probability to obtain an $s \times m$ matrix of posterior model 
 probabilities. It is then straightforward to extend equation @eq-logit-binary-bmame to average over the 
 distribution of posterior probability weights rather than relying on single estimate or point estimate 
-as shown in equation @eq-logit-bmame-reps below.
+as shown in equation @eq-logit-bmame-reps below.[^2]
 
 $$
 \begin{align}
@@ -389,6 +381,8 @@ each model. Although it is beyond the scope of this post, one could also use exh
 cross-validation which is equivalent to the marginal likelihood given a logarithmic scoring rule 
 [@Fong2020; @Buerkner2020], though this approach tends to be extremely expensive in terms of computation.
 :::
+
+[^2]: It is entirely possible thisd is wrong and doesn't actualy make sense so if someone has a better idea or suggestions for improvements I'd love to hear them.
 
 ### Bayes Factors and Prior Sensitivity
 
@@ -745,7 +739,7 @@ transformed parameters {
 model {
   // likelihood including constants
   if (!prior_only) {
-    target += bernoulli_logit_glm_lpmf(Y | X, Intercept, b);
+    target += bernoulli_logit_glm_lpmf(Y | Xc, Intercept, b);
   }
 
   // priors including constants
@@ -825,7 +819,7 @@ transformed parameters {
 model {
   // likelihood including constants
   if (!prior_only) {
-    target += bernoulli_logit_glm_lpmf(Y | X, Intercept, b);
+    target += bernoulli_logit_glm_lpmf(Y | Xc, Intercept, b);
   }
 
   // priors including constants
@@ -1241,7 +1235,7 @@ equation @eq-posterior-probability. Given $m$ possible candidate models and lett
 the parameter of interest and $k$ those that do not, we can obtain posterior *inclusion* and *exclusion* 
 probabilities for a given parameter. The ratio of these two probabilities shown in equation @eq-inclusion-prob 
 is an inclusion Bayes Factor and represents the relative posterior odds of models containing the parameter of 
-interest relative to all of the candidate models that do not.
+interest compared to all of the candidate models that do not.
 
 $$
 \mathrm{BF_{Inclusion}}~=~\frac{\sum_{i=1}\Pr(\mathcal{M}_{i} \, | \, y)}{\sum_{k=1}\Pr(\mathcal{M}_{k} \, | \, y)}
@@ -1255,7 +1249,7 @@ inclusion probability provides a continuous measure of evidence we can use to ev
 treatment or intervention of interest belongs to the true data generation process [@Hinne2020].[^7] 
 
 Although my interest here lies primarily in using the posterior model probabilities to obtain a model-wise mixture 
-distribution of the substantive effect estimates, I breifly illustrate here how one can formally test a hypothesis 
+distribution of the substantive effect estimates, I breifly illustrate how one can formally test a hypothesis 
 in a Bayesian framework and obtain a vague answer to a precise question. This may be useful in a sequential testing
 approach where we first wish to evaluate whether an effect exists before preceding to interpretation though one
 may also simply assume effects exist and focus on estimating their magnitude instead.
@@ -1265,7 +1259,7 @@ participation in combat during civil wars to each of the possible model specific
 either of the two measures. Although by convention, it is common to take the prior model probabilities to be
 equally likely--in effect an implicit uniform prior--this is far from the only possible approach and in many
 cases, particularly when adjudicating between competing theories, it may make more sense to weight the hypotheses
-according to some external source such as existing literature on the subject, meta-analyses, etc. For simplicity
+according to some external source such as existing research on the subject, meta-analyses, etc. For simplicity
 here, I assume each of the models is equally likely a priori and obtain posterior probabilities and inclusion 
 Bayes Factors for the parameters of interest as shown below.[^8]
 :::
@@ -1289,7 +1283,7 @@ model_params <- map(
 # Build a reference data frame with the positions of the predictors
 params_pos_df <- tibble(
   # Model Names
-  model = str_c("M", 1:length(main_model_params)),
+  model = str_c("M", 1:length(model_params)),
   # Female Rebels (Including Suicide Bombers)
   femrebels_pos = map_lgl(
     model_params,
@@ -1488,42 +1482,930 @@ bf_femrebels_vs_null|bf_femrebels_exs_vs_null
 ::: a
 Given the prior assumptions about the universe of effect sizes possible and prior probabilities for the hypothesis 
 that rebel groups in which women participate in combat during wartime are more likely to transition to political 
-parties at wars end, the posterior inclusion probability for female combatants (including suicide bombers) is 
-0.8410 while the inclusion probability for female combatants (excluding suicide bombers) 0.9360. Figure @fig-comparisons-bayes
-shows the Inclusion Bayes Factors for each of these measures based on equation @eq-inclusion-prob which suggest 
-that models containing the female combatants measure that also includes cases where women only particpated as suicide 
-bombers are approximately 5.29 times more likely than those that do not. If we focus on cases where women participated
-in combat in capacities that were not limited suicide bombings however, those models containing the female combatants 
-indicator are 14.64 times more likely than those that do not. This suggests a resonable degree of evidence in support 
-the of the expectation that women's participation in combat has a small to moderate effect on the probability of 
-rebel to party transitions.
-:::
-
-::: callout-important
-### Post Under Construction
-
-This post is a work in progress and is still under active development. Please check back soon for further updates and revisions.
+parties at wars end, the posterior inclusion probability for female combatants is approximately 0.841 when we 
+include cases in which women only participated as suicide bombers and 0.936 if we code participation only in cases
+where women served in a combat capacity that was not explicitly limited to suicide bombing. Stated differently, 
+as the inclusion Bayes Factors in figure @fig-comparisons-bayes illustrate, the observed data is between 5.29 
+and 14.64 times more likely to have arisen from those models that include a predictor for female combatants 
+depending on whether we consider cases in which women only participated in combat as suicide bombers or not.
+This suggests a resonable degree of evidence in support the of the expectation that women's participation in 
+combat has a small to moderate effect on the probability of rebel to party transitions.
 :::
 
 ## Model Averaged Marginal Effects
 
+Turning to the substantive effect estimate, I illustrate here three different approaches to estimating 
+model averaged marginal effects. When fitting each of the models in the Stan program above, we applied
+Bayesian g-formula to estimate the population average treatment effect in each of the models containing 
+the female combatants predictor and we can retreive those directly from the `brmsfit` objects. The
+`model_averaged_ame` function shown below implements the approach to averaging over a matrix of posterior
+probability weights outlined in equation @eq-logit-bmame-reps along with the simpler approach from equation
+@eq-logit-binary-bmame.
 
-### Illustration in R and Stan
+::: panel-tabset
+
+### Functions
+
+```r
+#' Estimating Model Averaged Marginal Effects and Contrasts for Bayesian Models
+#' 
+#' This function facilitates the estimation of model averaged and stacked 
+#' marginal effects for Bayesian models and is designed to account for uncertainty 
+#' in the process of model specification and selection when estimating average 
+#' marginal effects and probability contrasts.
+#'
+#' @aliases model_averaged_ame
+#' 
+#' @import data.table
+#' @importFrom purrr map_dbl
+#'
+#' @param x A datatable of posterior draws for the average marginal effects
+#' or predictions such as that returned by the `posterior_contrasts` function.
+#'
+#' @param weights An \eqn{n \times m} matrix of posterior probability weights 
+#' such as that returned by `bridgesampling::post_prob` or an m length vector
+#' of stacking or pseudo-BMA weights.
+#' 
+#' @param summary A logical argument indicating whether to return the full 
+#' draws for each row in `weights` or return the average for each model-draw 
+#' pair. Defaults to `FALSE`
+#
+#' @param ... Additional arguments for future development, currently unused.
+#'
+#' @return A datatable containing a weighted average of the posterior draws 
+#' for the model averaged marginal effects.
+#' 
+#' @export model_averaged_ame
+#' 
+model_averaged_ame <- function(x, weights, ndraws, summary = TRUE, ...) {
+  
+  # Nest the draws data frame
+  draws <- x[, list(x.yz = list(.SD)), by=model]
+  
+  # If weights are a matrix, calculate the draws by row
+  if (is.matrix(weights)) {
+    
+    # Construct a matrix of draw weights
+    weighted_draws <- apply(
+      weights, 
+      MARGIN = 1, 
+      FUN = function(x) {
+        brms:::round_largest_remainder(x * ndraws)
+      })
+    
+    # Initialize a list to store the draws in
+    out <- list()
+    
+    # Loop over each column in the matrix
+    for (i in 1:ncol(weighted_draws)) {
+      
+      # Randomly sample n rows for each model based on the weights
+      draw_ids <- lapply(weighted_draws[, i], function(x){
+        sample(sum(weighted_draws[,i]), size = x)
+      })
+      
+      # Randomly sample n draws proportional to the weights
+      out[[i]] <- lapply(seq_along(draws[, x.yz]), function(id) {
+        draws[, x.yz[[id]][draw_ids[[id]]]]
+      })
+      
+      # Bind the draws into a single data table per repetition
+      out[[i]] <- rbindlist(out[[i]], idcol = "model")
+    }
+    
+    # Combine everything into a single data table
+    out <- rbindlist(out, idcol = "bridge_rep")
+    
+    # Average over the bridge sampling repetitions by draw
+    if (isTRUE(summary)) {
+      out = out[
+        , keyby = .(.draw, model),
+        lapply(.SD, mean),
+        .SDcols = patterns("EY|AME")
+      ]
+    }
+    
+  } else if (is.vector(weights)) {
+    # Construct a vector of draw weights
+    weighted_draws <- round_largest_remainder(weights * ndraws)
+    
+    # Randomly sample n rows for each model based on the weights
+    draw_ids <- lapply(weighted_draws, function(x){
+      sample(sum(weighted_draws), size = x)
+    })
+    
+    # Randomly sample n draws proportional to the weights
+    out <- lapply(seq_along(draws[, x.yz]), function(id) {
+      draws[, x.yz[[id]][draw_ids[[id]]]]
+    })
+    
+    # Combine everything into a single data table
+    out <- rbindlist(out, idcol = "model")
+  }
+  
+  # Return the model averaged draws
+  return(out)
+  
+}
+```
+
+### Female Rebels (Including SBs)
+
+```r
+# Set the seed here for reproducibility
+set.seed(2023)
+
+# Extract the AMEs from the models containing femrebels
+femrebels_ame_boot <- map(
+  .x = with(
+    params_pos_df, 
+    bayes_model_fits[which(femrebels_pos == TRUE)]
+    ),
+  ~ .x$predictions
+  ) %>%
+  # Append the list of data tables into one
+  rbindlist(., idcol = "model")
+
+# Posterior Probabilities for female rebel models
+femrebels_bma_marglik <- with(
+  params_pos_df,
+  main_marglik[which(femrebels_pos == TRUE)]
+)
+
+# Matrix of Relative Posterior Probabilities for BMA
+femrebels_bma_post_probs <- do_call(
+  "post_prob", 
+  args = unname(femrebels_bma_marglik), 
+  pkg = "bridgesampling"
+)
+
+# Apply model names to the matrix
+colnames(femrebels_bma_post_probs) <- names(femrebels_bma_marglik) 
+
+# Calculate the weighted draws for each model
+femrebels_bmame <- model_averaged_ame(
+  femrebels_ame_boot, 
+  weights = femrebels_bma_post_probs,
+  ndraws = 30e3,
+  summary = TRUE
+  )
+
+# Print the first few rows
+head(femrebels_bmame)
+```
+
+```{r, echo=FALSE}
+# Read in the bmames from disk
+femrebels_bmame <- read_parquet("data/femrebels_bmame_bayesboot.gz.parquet")
+
+# Print the first few rows
+head(femrebels_bmame)
+```
+
+### Female Rebels (Excluding SBs)
+
+```r
+# Extract the AMEs from the models containing femrebels (excluding SBs)
+femrebels_exs_ame_boot <- map(
+  .x = with(
+    params_pos_df, 
+    bayes_model_fits[which(femrebelsexs_pos == TRUE)]
+    ),
+  ~ .x$predictions
+  ) %>%
+  # Append the list of data tables into one
+  rbindlist(., idcol = "model")
+
+# Posterior Probabilities for female rebel (excluding SBs) models
+femrebels_exs_bma_marglik <- with(
+  params_pos_df,
+  main_marglik[which(femrebelsexs_pos == TRUE)]
+)
+
+# Matrix of Relative Posterior Probabilities for BMA
+femrebels_exs_bma_post_probs <- do_call(
+  "post_prob", 
+  args = unname(femrebels_exs_bma_marglik), 
+  pkg = "bridgesampling"
+)
+
+# Apply model names to the matrix
+colnames(femrebels_exs_bma_post_probs) <- names(femrebels_exs_bma_marglik) 
+
+# Calculate the weighted draws for each model
+femrebels_exs_bmame <- model_averaged_ame(
+  femrebels_exs_ame_boot, 
+  weights = femrebels_exs_bma_post_probs,
+  ndraws = 30e3,
+  summary = TRUE
+  )
+
+# Print the first few rows
+head(femrebels_exs_bmame)
+```
+
+```{r, echo=FALSE}
+# Read in the bmames from disk
+femrebels_exs_bmame <- read_parquet("data/femrebels_exs_bmame_bayesboot.gz.parquet")
+
+# Print the first few rows
+head(femrebels_exs_bmame)
+```
+::: 
+
+::: a
+We can then plot the posterior distribution of the BMAMEs using `{ggdist}` as shown below which allows us 
+to nicely depict the uncertainty in the estimates. As @fig-model-averaged-ame-boot illustrates, the model
+averaged marginal effect estimates for the expected difference in the probability of former combatant
+group transitioning to a post-conflict political party is positive for both measures. When considering 
+only cases where women served in a combat capacity that was not explicitly limited to suicide bombing, 
+we see a 98.38% probability of the effect being positive and in the expected direction with a posterior 
+median of 0.2232 and 89% credible interval spanning the range 0.0625 and 0.3750. 
+
+The results are largely identical for the other measure that includes those cases in which female 
+combatants only served as suicide bombers as instances of participation, with a 96.32% probability 
+of the effect being positive and a posterior median of of 0.1875 and an 89% probability the parameter 
+value falls between 0.0268 and 0.3482. Overall, the general conclusion here is rebel groups where 
+women particpate in combat roles during wartime are more likely to form parties and compete in 
+post-conflict elections.
+::: 
+
+```{r fig-model-averaged-ame-boot, echo = TRUE, dev='svg'}
+#| label: fig-model-averaged-ame-boot
+#| fig-width: 14
+#| fig-height: 12
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Model Averaged Marginal Effects and Expectations for the Effect of Female Combatants on the Probability of Post-Conflict Party Transitions"
+#| 
+
+# Append these into a single dataframe for plotting
+bmame_boot_ests <- rbindlist(
+  list(
+    "Female Combtants (Excluding SB Roles)" = femrebels_exs_bmame, 
+    "Female Combtants (Including SB Roles)" = femrebels_bmame
+    ), 
+  idcol = "plot_row"
+  )
+
+# Initialize the ggplot2 object for the model averaged AMEs
+ggplot(bmame_boot_ests, aes(y = AME, x = plot_row)) +
+  # Violin plot looking things
+  stat_eye(
+    aes(
+      slab_alpha = after_stat(pdf), 
+      slab_fill = stat(y > 0), 
+      point_fill = plot_row, 
+      shape = plot_row
+    ),
+    slab_size = 2,
+    fill_type = "gradient",
+    point_interval = "median_qi",
+    .width = c(0.68, 0.89),
+    point_size = 6,
+    stroke = 2,
+    show.legend = FALSE, 
+    scale = 0.3
+  ) +
+  # Adjust the y axis scale
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    limits = c(-0.4, 0.65)
+    ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#23C3E4FF", "#C82803FF"), 
+    aesthetics = "slab_fill"
+  ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#3AA2FCFF", "#FD8A26FF"), 
+    aesthetics = "point_fill"
+  ) +
+  # Adjust shape scale
+  scale_shape_manual(values = c(22, 21)) +
+  # Add labels to the plot
+  labs(
+    y = parse(text = "bold('Model Averaged AME '*Delta)"),
+    x = ""
+    )
+```
+
+::: a
+Although this is the ideal approach since it accounts for the additional source of computational uncertainty
+introduced by approximating the marginal likelihood, it can be expensive in terms of both computational time 
+and memory requirements in addition to requiring a minimal knowledge of Stan. We can sidestep Stan and focus
+exclusively on `{brms}` by defining a simple R function to calculate contrasts and model averaged 
+marginal effects as shown below. As figure @fig-model-averaged-ame-alt illustrates, the estimates here are 
+virtually identical and do not differ substantively from those in figure @fig-model-averaged-ame-boot. 
+This estimation process is reasonably straightforward and can be used for any model supported 
+by `{brms}`.
+:::
+
+::: panel-tabset
+
+### Functions
+
+```r
+#' Posterior Contrasts for Bayesian Models fit with {brms}
+#'
+#' @param models A named list of model objects of class `brmsfit` for which to 
+#' generate predictions.
+#' 
+#' @param X A string indicating the name of the treatment in the models.
+#' 
+#' @param data Data used to fit the model objects.
+#' 
+#' @param contrasts Values of `X` at which to generate predictions. Defaults to
+#' `c(0, 1)` but could also be set to factor levels.
+#' 
+#' @param cores Number of cores to use for parallel computation. If cores > 1,
+#' future::multisession is used to speed computation via `{furrr}`. Requires
+#' the `{furrr}` package.
+#' 
+#' @param ... Additional arguments passed down to `brms::posterior_predict`
+#'
+#' @return A list of posterior contrasts for each model in `models`
+#' 
+#' @export posterior_contrasts
+#'
+posterior_contrasts <- function(models, 
+                                X, 
+                                data,
+                                contrasts = c(0, 1),
+                                cores = 1,
+                                ...) {
+  
+  # Check that all elements of models are of class brmsfit
+  for (i in seq_along(models)) {
+    brms_check <- brms::is.brmsfit(models[[i]])
+    stopifnot(
+      "All elements in models must be of class brmsfit" = brms_check, 
+      brms_check
+      )
+  }
+  
+  # Y_i(X = 0, Z)
+  lo <- data |> mutate("{X}" := contrasts[1])
+  
+  # Y_i(X = 1, Z)
+  hi <- data |> mutate("{X}" := contrasts[2])
+  
+  # Check if cores > 1
+  if (cores > 1) {
+    
+    # Requires {furrr}
+    require(furrr)
+    
+    # Fit models in parallel via future
+    plan(tweak(multisession, workers = cores))
+    
+    # Posterior predictions for each data set
+    predictions <- furrr::future_map(
+      .x = models,
+      ~ .get_posterior_predictions(hi, lo, model = .x, ...),
+      .options = furrr::furrr_options(
+        scheduling = 1,
+        seed = TRUE,
+        prefix = "prefix"
+      ),
+      .progress = TRUE
+    )
+    
+    # Close the future session
+    plan(sequential)
+  }
+  
+  if (cores == 1) {
+    # Posterior predictions for each data set
+    predictions <- purrr::map(
+      .x = models,
+      ~ .get_posterior_predictions(hi, lo, model = .x, ...)
+    )
+  }
+  
+  # Return the list of predictions
+  return(predictions)
+}
+
+# Helper function to get posterior prediction contrasts
+.get_posterior_predictions <- function(hi, lo, model, ...) {
+  
+  # Predictions for Y_i(X = 1, Z)
+  EYX1 <- brms::posterior_predict(model, newdata = hi, ...)
+  
+  # Predictions for Y_i(X = 0, Z)
+  EYX0 <- brms::posterior_predict(model, newdata = lo, ...)
+  
+  # Average over the observations for each draw in the prediction matrix
+  out <- data.table(
+    EYX1 = rowMeans(EYX1),
+    EYX0 = rowMeans(EYX0),
+    AME = rowMeans(EYX1 - EYX0),
+    .draw = 1:ndraws(model)
+  )
+  
+  # Return just the average contrast
+  return(out)
+}
+```
+
+### Female Rebels (Including SBs)
+
+```r
+# Models containing femrebels
+femrebels_mods <- with(
+  params_pos_df,
+  bayes_model_fits[which(femrebels_pos == TRUE)]
+)
+
+# Generate posterior expectations for the AMEs
+femrebels_ame_draws <- posterior_contrasts(
+  models = femrebels_mods, 
+  X = "femrebels", 
+  data = femrebels_mods[[1]]$data,
+  contrasts = c(0, 1),
+  cores = 4
+)
+
+# Calculate the weighted draws for each model
+femrebels_bmame_draws <- model_averaged_ame(
+  femrebels_ame_draws, 
+  weights = femrebels_bma_post_probs,
+  ndraws = 30e3,
+  summary = TRUE
+  )
+
+# Print the first few rows
+head(femrebels_bmame_draws)
+```
+
+```{r, echo=FALSE}
+# Read in the file from disk
+femrebels_bmame_draws <- read_parquet("data/femrebels_bmame_direct_contrast.gz.parquet")
+
+# Print the first few rows
+head(femrebels_bmame_draws)
+```
+
+### Female Rebels (Excluding SBs)
+
+```r
+# Models containing femrebels
+femrebels_exs_mods <- with(
+  params_pos_df,
+  bayes_model_fits[which(femrebelsexs_pos == TRUE)]
+)
+
+# Generate posterior expectations for the AMEs
+femrebels_exs_ame_draws <- posterior_contrasts(
+  models = femrebels_exs_mods, 
+  X = "femrebels_exs", 
+  data = femrebel_exs_mods$M112$data,
+  contrasts = c(0, 1),
+  cores = 4
+)
+
+# Calculate the weighted draws for each model
+femrebels_exs_bmame_draws <- model_averaged_ame(
+  femrebels_exs_ame_draws, 
+  weights = femrebels_exs_bma_post_probs,
+  ndraws = 30e3,
+  summary = TRUE
+  )
+
+# Print the first few rows
+head(femrebels_exs_bmame_draws)
+```
+
+```{r, echo=FALSE}
+# Read in the file from disk
+femrebels_exs_bmame_draws <- read_parquet("data/femrebels_exs_bmame_direct_contrast.gz.parquet")
+
+# Print the first few rows
+head(femrebels_exs_bmame_draws)
+```
+::: 
+
+```{r fig-model-averaged-ame-alt, echo = TRUE, dev='svg'}
+#| label: fig-model-averaged-ame-alt
+#| fig-width: 16
+#| fig-height: 14
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Model Averaged Marginal Effects and Expectations for the Effect of Female Combatants on the Probability of Post-Conflict Party Transitions, Direct Estimation"
+#| 
+
+femrebels_bmame_plot_alt <- femrebels_bmame_draws |>
+  # Initialize the ggplot2 object for the model averaged AME
+  ggplot(aes(x = AME)) +
+  # Add a slab interval to plot the weighted posterior
+  stat_halfeye(
+    aes(
+      slab_alpha = after_stat(pdf),
+      slab_fill = stat(x > 0)
+      ),
+    slab_size = 2,
+    slab_colour = "#1BD0D5FF",
+    shape = 22,
+    fill_type = "gradient",
+    point_interval = "median_qi",
+    .width = c(0.68, 0.89),
+    point_size = 6,
+    stroke = 2,
+    point_fill = "#99FE42FF",
+    show.legend = FALSE
+  ) +
+  # Add labels to the plot
+  labs(
+    x = parse(text = "bold('Model Averaged AME '*Delta)"),
+    y = "Posterior Density",
+    title = "Female Combtants (Including Suicide Bomber Roles)"
+  ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#208820", "#0060B0"), 
+    aesthetics = "slab_fill"
+  ) +
+  # Adjust the x axis scale
+  scale_x_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    limits = c(-0.4, 0.68)
+    ) +
+  # Adjust the y axis scale
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 6))
+
+femrebels_exs_bmame_plot_alt <- femrebels_exs_bmame_draws |>
+  # Initialize the ggplot2 object for the model averaged AME
+  ggplot(aes(x = AME)) +
+  # Add a slab interval to plot the weighted posterior
+  stat_halfeye(
+    aes(
+      slab_alpha = after_stat(pdf), 
+      slab_fill = stat(x > 0)
+      ),
+    slab_size = 2,
+    slab_colour = "#1BD0D5FF",
+    shape = 22,
+    fill_type = "gradient",
+    point_interval = "median_qi",
+    .width = c(0.68, 0.89),
+    point_size = 6,
+    stroke = 2,
+    point_fill = "#99FE42FF",
+    show.legend = FALSE
+  ) +
+  # Add labels to the plot
+  labs(
+    x = parse(text = "bold('Model Averaged AME '*Delta)"),
+    y = "Posterior Density",
+    title = "Female Combtants (Excluding Suicide Bomber Roles)"
+  ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#208820", "#0060B0"), 
+    aesthetics = "slab_fill"
+  ) +
+  # Adjust the x axis scale
+  scale_x_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    limits = c(-0.4, 0.68)
+    ) +
+  # Adjust the y axis scale
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 6))
+
+(femrebels_bmame_plot_alt / femrebels_exs_bmame_plot_alt)
+```
+
+## Illustration in {marginaleffects}
+
+Finally, in the interest of encouraging applied researchers to take uncertainty seriously and integrate sensitivity 
+analysis into their work directly rather than treating it as something to undertake only when forced, I turn 
+now to a straightforward illustration of BMAMEs using the `{marginaleffects}` package which provides the 
+necessary functionality to handle most of the above steps automatically thanks to the feature-rich support for 
+various approaches to averaging across posterior distributions provided by `{brms}`.
+
+::: a
+To obtain the BMAME for a given parameter while accounting for the uncertainty in the model specifications, 
+version 0.5.0 and higher of `{marginaleffects}` allows users to specify the argument `type = "average"` in 
+their call to either `marginaleffects::marginaleffects` or `marginaleffects::comparisons` for objects of 
+class `brmsfit` along with any additional arguments to be passed down to `pp_average` such as the type of 
+weights to estimate, or alternatively a numeric vector of pre-estimated weights which is usually the more 
+computationally efficient option and the approach I take in the example below.
+
+Although up to this point I have been averaging over all possible combinations of models containing the
+parameter of interest, we will take a step back here and focus on the full model specifications, averaging 
+over two models that differ only in which of the female combatants measures they contain. I begin by 
+specifying and estimating each of the models using `{brms}`.
+::: 
+
+::: panel-tabset
+
+### Specification
+
+```r
+# Prepare the data, we need the two variables to be named the same
+model_data <- list(
+  "femrebels" = model_df %>% 
+    mutate(femrebel = femrebels),
+  "femrebels_exs" = model_df %>% 
+    mutate(femrebel = femrebels_exs)
+)
+
+# Model formula for the female rebels models
+femrebel_bf <- bf(
+  elect_party ~ femrebels + left_ideol + nationalist + un_intervention + 
+    party_affil + ethnic_group + un_intervention + africa + qsi_pol + 
+    qsi_econ + qsi_social
+  )
+
+# Specify priors for the model parameters
+femrebel_logit_priors <- prior(normal(0, 0.75), class = b) +
+  prior(normal(0, 1), class = Intercept)
+
+# Define the custom stanvars for the bootstrapped g-formula for comparison purposes
+gformula_vars <- stanvar(
+  x = 1,
+  name = "treat_pos",
+  block = "data",
+  scode = "int<lower = 1, upper = K> treat_pos; // Treatment Position"
+) + 
+  # Code for the transformed data block
+  stanvar(
+    scode = "
+  // Bootstrap Probabilities
+  vector[N] boot_probs = rep_vector(1.0/N, N);
+  
+  // Matrices for the bootstrapped predictions
+  matrix[N, Kc] Xa; 
+  matrix[N, Kc] Xb;
+    
+  // Potential Outcome Y(X = 1, Z)
+  Xa = X[, 2:K];
+  Xa[, treat_pos] = ones_vector(N);
+    
+  // Potential Outcome Y(X = 0, Z)
+  Xb = X[, 2:K];
+  Xb[, treat_pos] = zeros_vector(N);
+    ",
+  position = "end",
+  block = "tdata"
+  ) +
+  # Code for the bootstrapped g-formula in generated quantities
+  stanvar(
+    scode = "
+  // Row index to be sampled for bootstrap
+  int row_i;
+    
+  // Calculate Average Marginal Effect in the Bootstrapped sample
+  real AME = 0;
+  array[N] real Y_X1; // Potential Outcome Y(X = 1, Z)
+  array[N] real Y_X0; // Potential Outcome Y(X = 0, Z)
+    
+  for (n in 1:N) {
+    // Sample the Baseline Covariates
+    row_i = categorical_rng(boot_probs);
+      
+    // Sample Y(x) where x = 1 and x = 0
+    Y_X1[n] = bernoulli_logit_rng(b_Intercept + Xa[row_i] * b);
+    Y_X0[n] = bernoulli_logit_rng(b_Intercept + Xb[row_i] * b);
+      
+    // Add Contribution of the ith Observation to the Bootstrapped AME
+    AME = AME + (Y_X1[n] - Y_X0[n])/N;
+  }
+    
+  // Take the mean of the posterior expectations
+  real EYX1 = mean(Y_X1); // E[Y | X = 1, Z]
+  real EYX0 = mean(Y_X0); // E[Y | X = 0, Z]
+    ",
+  position = "end",
+  block = "genquant"
+  )
+```
+
+### Estimation
+
+```r
+# Fit each of the models (6 chains, 8k iterations), takes about 3 seconds
+femrebels_logit_fits <- map2(
+  .x = model_data,
+  .y = str_c("Party_Transition_Logit_", names(model_data),  ".rds"),
+  .f = ~ brm(
+    formula = femrebel_bf,
+    family = brmsfamily("bernoulli", link = "logit"),
+    prior = femrebel_logit_priors,
+    data = .x,
+    cores = 12, # Max number of cores to use for parallel chains
+    chains = 6, # Number of chains, should be at least 4
+    iter = 8000, # Total iterations = Warm-Up + Sampling
+    warmup = 3000, # Warm-Up Iterations
+    stanvars = gformula_vars, # Custom Stan code to include in the model
+    save_pars = save_pars(all = TRUE),
+    seed = 2023,
+    backend = "cmdstanr",
+    sample_prior = "yes",
+    file = .y
+  )
+)
+
+# Add PSIS LOO-CV and Marginal Likelihood
+femrebels_logit_fits <- map(
+  .x = femrebels_logit_fits,
+  .f = ~ add_criterion(
+    .x,
+    criterion = c("loo", "marglik"),
+    max_iter = 5e3,
+    repetitions = 25,
+    cores = 8,
+    silent = TRUE
+  ))
+```
+::: 
 
 
-### Illustration in {marginaleffects}
+::: a
+We can then use `bridgesampling::post_prob` to obtain the relative probability of each model based on
+the marginal likelihood estimates and `brms::loo_model_weights` to obtain cross-validation based 
+stacking and pseudo-BMA weights. We can then use `comparisons` to estimate the model averaged probability
+contrasts.
+:::
 
-Once we have decided how to obtain the model weights--whether using marginal likelihood or cross-validation based 
-stacking--the `{marginaleffects}` package provides the necessary functionality to handle everything else for us 
-thanks to the feature-rich support for various approaches to averaging across posterior distributions provided by 
-`{brms}`. To obtain the BMAME for a given parameter while accounting for the uncertainty in the model specifications, 
-version 0.5.0 and higher of `{marginaleffects}` allows users to specify the argument `type = "average"` in their
-call to either `marginaleffects::marginaleffects` or `marginaleffects::comparisons` for objects of class `brmsfit`
-along with any additional arguments to be passed down to `pp_average` such as the type of weights to estimate, or 
-alternatively a numeric vector of pre-estimated weights which is usually the more computationally efficient option 
-and the approach I take in the applied example below. For those cases not covered by the marginal effects 
-implementation, I also provide an illustration via R and Stan that should be fairly straightforward to convert to 
-other languages as necessary.
+::: panel-tabset
 
+### Model Weights
+
+```r
+# Get the posterior probability weights
+postprob_weights <- bridgesampling::post_prob(
+  femrebels_logit_fits[[1]]$criteria$marglik, # Full Model, Including Suicide Bombers
+  femrebels_logit_fits[[2]]$criteria$marglik, # Full Model, Excluding Suicide Bombers
+  prior_prob = c(0.5, 0.5), # This is the default, I'm just being explicit
+  model_names = c("femrebels", "femrebels_exs")
+)
+
+# Calculate Pseudo-BMA+ Weights
+pbma_weights <- loo_model_weights(
+  femrebels_logit_fits[[1]],
+  femrebels_logit_fits[[2]],
+  method = "pseudobma",
+  model_names = names(femrebels_logit_fits),
+  BB = TRUE, # Pseudo-BMA+ with Bayesian Bootstrap
+  BB_n = 10000, # Use 10k replications for Bayesian Bootstrap
+  cores = 8L
+)
+
+# Calculate Stacking Weights
+stacking_weights <- loo_model_weights(
+  femrebels_logit_fits[[1]],
+  femrebels_logit_fits[[2]],
+  method = "stacking",
+  model_names = names(femrebels_logit_fits),
+  optim_control = list(reltol = 1e-10),
+  cores = 8L
+)
+
+# Store all the weights in a named list
+weights_ls <- list(
+  "BMA" = apply(postprob_weights, 2, mean),
+  "Stacking" = stacking_weights,
+  "Pseudo-BMA+" = pbma_weights
+)
+
+# Print a comparison of the weights
+print(weights_ls)
+```
+
+```{r, echo = FALSE}
+# Read in the weights
+weights_ls <- read_rds("data/example_model_weights.rds")
+
+print(weights_ls)
+```
+
+### Comparisons
+
+```r
+# Calculate model averaged contrasts
+comparisons_femrebels <- map(
+  .x = weights_ls,
+  ~ comparisons(
+    femrebels_logit_fits[[1]],
+    m1 = femrebels_logit_fits[[2]], # Subsequent models must be named arguments
+    variables = "femrebel",
+    type = "average",
+    transform_pre = "differenceavg",
+    weights = .x,
+    method = "posterior_predict" # Accounts for observation-level uncertainty
+  )
+)
+
+# Extract the posterior draws
+comparisons_femrebels_draws <- map(
+  .x = comparisons_femrebels,
+  ~ posteriordraws(.x, shape = "long")
+)
+
+# Bind the draws frames into a data table
+comparisons_femrebels_draws <- rbindlist(
+  comparisons_femrebels_draws,
+  idcol = "type"
+  )
+```
+
+```{r, echo = FALSE}
+# Read in the draws
+comparisons_femrebels_draws <- read_parquet("data/comparisons_femrebels_draws.gz.parquet")
+```
+::: 
+
+::: a
+Figure @fig-model-averaged-ame-margins shows a side by side comparison of the weighted average of the 
+contrasts based on different weighting approaches. The results here are largely the same as those above,
+but we have combined the two measures into a single model-wise mixture distribution and can incorporate 
+what is effectively measurement uncertainty here directly into the quantity of interest. The `{marginaleffects}` 
+implementation is somewhat limted by its dependence on `brms::pp_average` and it is on my list of things to 
+do for the coming year to work out a more efficient approach that allows for the efficiency and flexibility 
+of those illustrated in the preceding section.
+:::
+
+```{r fig-model-averaged-ame-margins, echo = TRUE, dev='svg'}
+#| label: fig-model-averaged-ame-margins
+#| fig-width: 14
+#| fig-height: 12
+#| fig-align: center
+#| fig-dpi: 300
+#| fig-cap: "Model Averaged Marginal Effects for the Effect of Female Combatants on the Probability of Post-Conflict Party Transitions, {marginaleffects} Implementation"
+
+
+# Initialize the ggplot2 object for the model averaged AMEs
+comparisons_femrebels_draws %>% 
+ggplot(aes(y = draw, x = weights)) +
+  # Violin plot looking things
+  stat_eye(
+    aes(
+      slab_alpha = after_stat(pdf), 
+      slab_fill = weights, 
+      point_fill = weights, 
+      shape = weights
+    ),
+    slab_size = 2,
+    fill_type = "gradient",
+    point_interval = "median_qi",
+    .width = c(0.68, 0.89),
+    point_size = 6,
+    stroke = 2,
+    show.legend = FALSE, 
+    scale = 0.8
+  ) +
+  # Adjust the y axis scale
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10),
+    limits = c(-0.19, 0.54)
+  ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#23C3E4FF", "#C82803FF", "#2EF19CFF"), 
+    aesthetics = "slab_fill"
+  ) +
+  # Adjust fill scale
+  scale_fill_manual(
+    values = c("#3AA2FCFF", "#FD8A26FF", "#99FE42FF"), 
+    aesthetics = "point_fill"
+  ) +
+  # Adjust shape scale
+  scale_shape_manual(values = c(22, 21, 24)) +
+  # Add labels to the plot
+  labs(
+    y = parse(text = "bold('Model Averaged AME '*Delta)"),
+    x = ""
+  )
+
+```
+
+## Conclusion
+
+This concludes what was hopefully a detailed illustration of model averaged marginal 
+effects with `{brms}`, `{marginaleffects}`, and Stan. The general takeaway here is 
+that selecting a single model is usually the wrong approach and there is seldom any 
+need to do so. While no method of estimation is perfect, BMA and its variants 
+provide a principled, relatively robust way to propagate uncertainty in quantities 
+typically of interest to researchers in the social sciences and can help us avoid 
+unnecessary dichotomies that are, in most cases, false. By applying probability 
+theory to average across posterior distributions when estimating average marginal 
+effects, we can obtain interpretable model averaged estimates for both linear and 
+non-linear regression models.
+
+::: a
+As far as subsequent developments are concerned, this is effectively the cornerstone
+of my dissertation work so I am hoping to have at least one subsequent post 
+illustrating and implementing BMAMEs for multilevel models that employ non-linear 
+link functions in the comining weeks. In the meantime, however, remember that nothing
+ever good comes from mixing odds and ratios or exposing your relatives to unnecessary 
+risks and holding the random effects in a hierarchical model at their mean still gives
+you a conditional estimate that results in a weak connection between theory and data.
+
+Finally, if you catch any mistakes--and I can almost guarentee there are many in a 
+post of this length--either leave a comment or let me know some other way (i.e.., twitter).
+:::
 
 # References

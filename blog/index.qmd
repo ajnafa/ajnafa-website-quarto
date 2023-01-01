@@ -3,7 +3,7 @@ title: "A Bayesian Statistics and Data Science Blog"
 author: ""
 listing:
   contents: 
-    - "2022/statistical-adjustment-interpretation/index.qmd"
+    - "2022/**/index.qmd"
     - "2023/**/index.qmd"
   categories: true
 page-layout: full
