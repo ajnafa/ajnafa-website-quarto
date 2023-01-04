@@ -13,7 +13,21 @@ code-fold: true
 
 # Execution options
 execute: 
-  freeze: true
+  freeze: auto
+
+# Social Media Information
+open-graph:
+  title: "An Introduction to Being Less Wrong"
+  description: "Bayesian Hypothesis Testing and Model Averaged Marginal Effects for the Social Sciences"
+  image: "figs/bmame-blog-post-preview.png"
+
+twitter-card: 
+  title: "An Introduction to Being Less Wrong"
+  image: "figs/bmame-blog-post-preview.png"
+  card-style: summary_large_image
+  description: "Bayesian Hypothesis Testing and Model Averaged Marginal Effects for the Social Sciences"
+  creator: "@adamjnafa"
+  site: "@adamjnafa"
 ---
 
 ```{r setup, include=FALSE}
@@ -154,7 +168,7 @@ theme_set(plot_theme(
     strip_face = "bold",
     y_axis_face = "bold",
     x_axis_face = "bold",
-    plot.margin = margin(2, 0, 4, 5, "mm"),
+    plot.margin = margin(2, 2, 4, 5, "mm"),
     plot.caption.position = "plot",
     plot.title.position = "plot",
     strip_size = 24,
@@ -205,10 +219,10 @@ significance" and precise answers to poorly defined questions [@Ward2010; @Schro
 [^1]: For a recent application of BMA in the context of instrument selection see @Rozenas2019.
 
 ::: a 
-In contrast to the advice of @Montgomery2010 who suggest "BMA is best used as a subsequent robustness 
+In minor contrast to the past advice of @Montgomery2010 who suggest "BMA is best used as a subsequent robustness 
 check to show that our inferences are not overly sensitive to plausible variations in model specification" 
-(266), I argue here that model averaging can and should be used as far more than a robustness check if for
-no other reason than because a model-wise mixture distribution for our paramter of intertest is almost 
+(266), I argue here model averaging can and should be used as far more than a robustness check if for
+no other reason than a model-wise mixture distribution for the paramter of interest is almost 
 certainly more informative than a point estimate from a single model specification. Indeed, BMA provides
 one of the few natural and intuitive ways of resolving some of the issues outlined in the preceding 
 paragraph, particularly as it pertains to the evaluation of non-nested theoretical models, while also
@@ -693,9 +707,10 @@ direct knowledge of Stan, it is limited for my purposes here by the fact that it
 the underlying Stan model for each fit. This process ends up being extremely inefficient for a large 
 number of model configurations since each model takes three times as long to compile as it does to fit.
 
-To circumvent this issue, I implement the model directly in Stan as shown below which is designed to be 
-directly compatible with brms and implments the bayesian g-formula for the average marginal effect of 
-women's participation in combat on the probability of a rebel-to-party transition during the estimation 
+To circumvent this issue, I implement the model directly in Stan in a way designed to be 
+directly compatible with `{brms}`. For models containing the parameter of interest, the model implments 
+the bayesian g-formula to estimate the average marginal effect of women's participation in combat 
+on the probability of a rebel-to-party transition during the estimation 
 process in the generated quanitites block. As I previously demonstrated in 
 [this post](../statistical-adjustment-interpretation/index.qmd), it is then possible to compile the 
 Stan model once and use the same program for each dataset using `{cmdstanr}` directly. Further 
@@ -1536,7 +1551,6 @@ probability weights outlined in equation @eq-logit-bmame-reps along with the sim
 #' @aliases model_averaged_ame
 #' 
 #' @import data.table
-#' @importFrom purrr map_dbl
 #'
 #' @param x A datatable of posterior draws for the average marginal effects
 #' or predictions such as that returned by the `posterior_contrasts` function.
@@ -1606,7 +1620,7 @@ model_averaged_ame <- function(x, weights, ndraws, summary = TRUE, ...) {
     
   } else if (is.vector(weights)) {
     # Construct a vector of draw weights
-    weighted_draws <- round_largest_remainder(weights * ndraws)
+    weighted_draws <- brms:::round_largest_remainder(weights * ndraws)
     
     # Randomly sample n rows for each model based on the weights
     draw_ids <- lapply(weighted_draws, function(x){
@@ -1761,8 +1775,8 @@ post-conflict elections.
 # Append these into a single dataframe for plotting
 bmame_boot_ests <- rbindlist(
   list(
-    "Female Combtants (Excluding SB Roles)" = femrebels_exs_bmame, 
-    "Female Combtants (Including SB Roles)" = femrebels_bmame
+    "Female Combtants (Excluding SBs)" = femrebels_exs_bmame, 
+    "Female Combtants (Including SBs)" = femrebels_bmame
     ), 
   idcol = "plot_row"
   )
@@ -1784,7 +1798,7 @@ ggplot(bmame_boot_ests, aes(y = AME, x = plot_row)) +
     point_size = 6,
     stroke = 2,
     show.legend = FALSE, 
-    scale = 0.3
+    scale = 0.7
   ) +
   # Adjust the y axis scale
   scale_y_continuous(
@@ -2418,8 +2432,8 @@ non-linear regression models.
 As far as subsequent developments are concerned, this is effectively the cornerstone
 of my dissertation work so I am hoping to have at least one subsequent post 
 illustrating and implementing BMAMEs for multilevel models that employ non-linear 
-link functions in the comining weeks. In the meantime, however, remember that nothing
-ever good comes from mixing odds and ratios or exposing your relatives to unnecessary 
+link functions in the comining weeks. In the meantime, however, remember that nothing 
+good ever comes from mixing odds and ratios or exposing your relatives to unnecessary 
 risks and holding the random effects in a hierarchical model at their mean still gives
 you a conditional estimate that results in a weak connection between theory and data.
 Finally, if you catch any mistakes--and I can almost guarentee there are many in a 
