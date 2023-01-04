@@ -13,7 +13,7 @@ code-fold: true
 
 # Execution options
 execute: 
-  freeze: auto
+  freeze: true
 
 # Social Media Information
 open-graph:
