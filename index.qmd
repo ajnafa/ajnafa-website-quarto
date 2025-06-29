@@ -10,9 +10,6 @@ about:
     - icon: twitter
       href: https://twitter.com/adamjnafa
       text: twitter
-    - icon: mastodon
-      href: https://bayes.club/@ajordannafa
-      text: Mastodon
     - icon: github
       href: https://github.com/ajnafa
       text: Github
@@ -25,15 +22,19 @@ about:
 ---
 
 
-Welcome to my personal website. I am a Quantitative Social Scientist and Teaching Fellow in the [Department of Political Science](https://politicalscience.unt.edu/) at 
-the [University of North Texas](https://www.unt.edu/). I have five years' experience working both independently and in collaboration with colleagues to model data and 
-provide insights necessary to answer research questions. My core skills include research design, causal inference, quasi-experimental methods, multilevel analysis, 
-advanced data analytics in R, Stan, and Python, survey research, and applied Bayesian inference.
+Welcome to my personal website. I am currently a Data Scientist and Bayesian 
+Statistician at [Game Data Pros](https://gamedatapros.com/core-team/) where I 
+design and build production platforms for large scale experimentation, revenue 
+optimization, promotional pricing, and personalized targeting in mobile and console 
+games. At present, My general career interests center around the development and 
+application of Bayesian inference, decision theory, reinforcement learning, and 
+experimental design in industry. 
 
 ::: a
-At present, my work is focused at the intersection of applied Bayesian statistics and causal inference with a substantive focus on women in politics and comparative 
-political behavior. More information on my background and recent projects can be found on the [about](about.qmd) and [projects](projects.qmd) sections 
-of the site or my [github](https://github.com/ajnafa), respectively. I also write occasional [blog posts](blog/index.qmd) on applied Bayesian statistics, causal 
-inference, and data science.
+More information on my background can be found on the [about](about.qmd) section
+of the site and past projects from my time in academia are available on my 
+[github](https://github.com/ajnafa). respectively. I also write occasional 
+[blog posts](blog/index.qmd) on applied Bayesian statistics, causal inference, and data 
+science. If you are interested in my consulting services, please see the 
+[consulting](consulting.qmd) page.
 :::
-

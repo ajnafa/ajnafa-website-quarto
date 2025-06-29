@@ -11,9 +11,6 @@ about:
     - icon: twitter
       href: https://twitter.com/adamjnafa
       text: twitter
-    - icon: mastodon
-      href: https://bayes.club/@ajordannafa
-      text: Mastodon
     - icon: github
       href: https://github.com/ajnafa
       text: Github
@@ -26,81 +23,26 @@ about:
 ---
  
 
-I am a Quantitative Social Scientist and Teaching Fellow in the Department of Political 
-Science at the University of North Texas where I apply Bayesian inference and computational 
-statistics to examine how contextual factors shape individuals' attitudes, decisions, and 
-behavior. I have five years' experience working both independently and in collaboration 
-with colleagues to model data and provide insights necessary to answer research questions. 
-My core skills include research design, causal inference, quasi-experimental methods, 
-advanced data analytics in R, Stan, and Python, survey research, and an expertise in 
-applied Bayesian statistics. I also currently teach undergraduate courses in [applied 
-causal inference for quantitative political research](https://github.com/ajnafa/psci-3300-political-science-research) 
-and have previously taught courses in American political institutions and behavior.
+I am currently a Data Scientist and Bayesian Statistician at Game Data Pros where I design 
+and build production platforms for large scale experimentation, revenue optimization, 
+promotional pricing, and personalized targeting in mobile and console games. My general 
+career interests center around the development and application of Bayesian inference, 
+decision theory, reinforcement learning, and experimental design in industry.
 
 ::: a
-My general career interests center around the development and application of Bayesian 
-inference and predictive analytics to answer questions about complex social phenomena 
-and solve business problems. As I approach the end of my PhD, I am in the process of 
-transitioning from academic social science to industry data science and applied analytics 
-and am actively seeking out data scientist, data analyst, and applied statistician roles, 
-particularly those oriented towards consulting.
+I have six years' experience working both independently and in collaboration with colleagues 
+to design and build production quality systems and pipelines for experimentation and ad 
+campaigns, modeling complex data structures to provide insights necessary to answer questions 
+and inform business decisions. My core skills include experimental design, advanced data 
+analytics, process automation, R, Stan, Python, and a deep expertise in Bayesian statistics, 
+decision theory, and causal inference.
 ::: 
 
-## Experience
-
-::: {.d-flex .justify-content-between}
-::: {}
-**Quantitative Social Scientist**  
-**University of North Texas** 
-:::
-::: {.text-end}
-Aug 2018 - Present  
-Denton, TX  
-:::
+::: a
+In a past life, I was a PhD Candidate in the Department of Political Science at the University 
+of North Texas where I applied Bayesian inference and computational statistics to analyze how 
+institutions shape individuals' attitudes, decisions, and behavior. I have two years of experience 
+teaching undergraduate courses in statistics and causal inference for political research, American 
+political institutions, and mass political behavior.
 :::
 
-::: {.d-flex .justify-content-between}
-::: {}
-**Teaching Fellow**  
-**University of North Texas** 
-:::
-::: {.text-end} 
-Oct 2021 - Present  
-Denton, TX 
-:::
-:::
-
-::: {.d-flex .justify-content-between}
-::: {}
-**Research Assistant**  
-**Texas Woman's University** 
-:::
-::: {.text-end} 
-Feb 2018 - Aug 2018  
-Denton, TX 
-:::
-:::
-
-## Education
-
-::: {.d-flex .justify-content-between}
-::: {}
-**University of North Texas**  
-PhD in Political Science
-:::
-::: {.text-end}
-Aug 2018 - Present  
-Denton, TX  
-:::
-:::
-
-::: {.d-flex .justify-content-between}
-::: {}
-**Texas Woman's University**  
-Bachelor of Science in Political Science
-:::
-::: {.text-end}
-Aug 2014 - Aug 2018  
-Denton, TX  
-:::
-:::
