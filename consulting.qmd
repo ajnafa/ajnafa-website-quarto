@@ -19,9 +19,22 @@ about:
 ---
 
 I offer consulting services in the areas of data science and software engineering for 
-projects involving Bayesian statistics, causal inference, and predictive modeling. If 
-you have a project that you think I might be able to help with, please get in touch via 
+projects involving Bayesian statistics and predictive modeling. I have experience working 
+with a variety of clients, including startups, established companies, and academic 
+researchers. My primary services include:
+
+- **Bayesian Data Analysis**: I can help you design, implement, and deploy Bayesian models
+ for your data, including hierarchical models, time series models, and spatial models. I
+ can also assist with model selection, diagnostics, and interpretation of results.
+
+- **Predictive Modeling**: I can help you develop predictive models using probabilistic
+  machine learning techniques. I can also assist with feature engineering, model selection,
+  evaluation, and API design.
+
+::: a
+If you have a project that you think I might be able to help with, please get in touch via 
 email at [adamjnafa@gmail.com](mailto:adamjnafa@gmail.com) and include a brief description 
 of the project, your goals, and any relevant deadlines. If I believe I can help, I will 
-follow up to schedule a free initial consultation to discuss your specific needs in 
-more detail.
+follow up to schedule a free initial consultation to discuss your specific needs and how
+I can assist you in more detail.
+:::
