@@ -3,7 +3,7 @@ title: Resume/CV
 engine: knitr 
 comments: false
 cv:
-  pdf: "Nafa, A. Jordan_Resume_December-2022.pdf"
+  pdf: "Nafa_Jordan_Resume_06-29-2025.pdf"
 ---
 
 ```{css echo=FALSE}

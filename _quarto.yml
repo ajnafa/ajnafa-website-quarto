@@ -53,10 +53,10 @@ website:
         text: Blog
       - href: "cv/index.qmd"
         text: Resume/CV
-      #- href: "consulting/index.qmd"
-      #  text: Consulting
-      - href: "projects.qmd"
-        text: Projects
+      - href: "consulting.qmd"
+        text: Consulting
+      #- href: "projects.qmd"
+      #  text: Projects
     right:
       - icon: github
         href: https://github.com/ajnafa

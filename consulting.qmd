@@ -18,3 +18,10 @@ about:
       text: LinkedIn
 ---
 
+I offer consulting services in the areas of data science and software engineering for 
+projects involving Bayesian statistics, causal inference, and predictive modeling. If 
+you have a project that you think I might be able to help with, please get in touch via 
+email at [adamjnafa@gmail.com](mailto:adamjnafa@gmail.com) and include a brief description 
+of the project, your goals, and any relevant deadlines. If I believe I can help, I will 
+follow up to schedule a free initial consultation to discuss your specific needs in 
+more detail.
