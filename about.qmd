@@ -23,17 +23,17 @@ about:
 ---
  
 
-I am currently a Data Scientist and Bayesian Statistician at Game Data Pros where I design 
-and build production platforms for large scale experimentation, revenue optimization, 
-promotional pricing, and personalized targeting in mobile and console games. My general 
+I am currently a Data Scientist and Bayesian Statistician at [Game Data Pros](https://gamedatapros.com/) 
+where I design and build production platforms for large scale experimentation, revenue optimization, 
+promotional pricing, and personalization in mobile and console games. My general 
 career interests center around the development and application of Bayesian inference, 
 decision theory, reinforcement learning, and experimental design in industry.
 
 ::: a
-I have six years' experience working both independently and in collaboration with colleagues 
-to design and build production quality systems and pipelines for experimentation and ad 
-campaigns, modeling complex data structures to provide insights necessary to answer questions 
-and inform business decisions. My core skills include experimental design, advanced data 
+I have extensive experience working both independently and in collaboration with colleagues 
+to design and build production quality inferential systems, working on experimentation and ad 
+platforms, and modeling complex data structures to provide insights necessary to answer questions 
+and inform decisions in business and academia. My core skills include experimental design, advanced data 
 analytics, process automation, R, Stan, Python, and a deep expertise in Bayesian statistics, 
 decision theory, and causal inference.
 ::: 

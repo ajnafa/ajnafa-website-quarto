@@ -26,9 +26,9 @@ Welcome to my personal website. I am currently a Data Scientist and Bayesian
 Statistician at [Game Data Pros](https://gamedatapros.com/core-team/) where I 
 design and build production platforms for large scale experimentation, revenue 
 optimization, promotional pricing, and personalized targeting in mobile and console 
-games. At present, My general career interests center around the development and 
+games. At present, my general career interests center around the development and 
 application of Bayesian inference, decision theory, reinforcement learning, and 
-experimental design in industry. 
+experimental design in industry.
 
 ::: a
 More information on my background can be found on the [about](about.qmd) section
