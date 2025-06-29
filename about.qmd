@@ -23,7 +23,7 @@ about:
 ---
  
 
-I am currently a Data Scientist and Bayesian Statistician at [Game Data Pros](https://gamedatapros.com/) 
+I am currently a Data Scientist and Bayesian Statistician at [Game Data Pros](https://gamedatapros.com/core-team/) 
 where I design and build production platforms for large scale experimentation, revenue optimization, 
 promotional pricing, and personalization in mobile and console games. My general 
 career interests center around the development and application of Bayesian inference, 
