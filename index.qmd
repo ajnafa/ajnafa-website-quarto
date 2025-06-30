@@ -33,8 +33,8 @@ experimental design in industry.
 ::: a
 More information on my background can be found on the [about](about.qmd) section
 of the site and past projects from my time in academia are available on my 
-[github](https://github.com/ajnafa). respectively. I also write occasional 
+[github](https://github.com/ajnafa). I also write occasional 
 [blog posts](blog/index.qmd) on applied Bayesian statistics, causal inference, and data 
-science. If you are interested in my consulting services, please see the 
+science. If you are interested in enlisting my consulting services, please see the 
 [consulting](consulting.qmd) page.
 :::
